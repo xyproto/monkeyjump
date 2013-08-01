@@ -1,0 +1,97 @@
+#!/usr/bin/env python2
+#-*-coding:utf-8-*-
+#vim: set enc=utf8:
+#
+# author:   Alexander Rødseth <alexanro@stud.ntnu.no>
+# date:     Wed Apr 20 22:08:08 UTC 2005
+# date:     Tue Sep 27 15:10:06 CEST 2005
+# date:     Mon Oct 10 13:04:56 CEST 2005
+#
+
+print "Starting Monkeyjump v.0.4..."
+
+import pygame
+from pygame.locals import *
+from burnlib.scriptlib import KeyParser
+import sys
+import os.path
+
+CONF_DIR = "."
+
+# The default size of the board (give a number as the first argument to change)
+BOARDSIZE = 9
+
+# This looks good
+RESOLUTION = (512, 512)
+
+# This looks okay, but the cursor is a few pixels off
+# RESOLUTION = (640, 480) 
+
+# This looks bad ATM, since the lines on the board are misaligned
+# RESOLUTION = (1024, 768)
+
+# If you run it in a window, you have room for the GnuGo GTP-text as well :-)
+FULLSCREEN = False
+
+try:
+    import psyco
+    psyco.full()
+except ImportError:
+    pass
+
+def main():
+    global BOARDSIZE
+    
+    # is the argument the boardsize or a filename?
+    arg = " ".join(sys.argv[1:])
+    filename = ""
+    try:
+        BOARDSIZE = int(arg)
+    except ValueError:
+        filename = arg
+
+    if filename:
+        # finding size based on the filename
+        # (could include other sizes in the future)
+        file = open(filename)
+        data = file.read()
+        if "SZ[9]" in data:
+            BOARDSIZE = 9
+        elif "SZ[13]" in data:
+            BOARDSIZE = 13
+        elif "SZ[19]" in data:
+            BOARDSIZE = 19
+        file.close()
+
+    print "Loading keybindings..."
+    kp = KeyParser(os.path.join(CONF_DIR, "keybindings.conf"), RESOLUTION, FULLSCREEN, BOARDSIZE)
+
+    # is the argument a filename?
+    if filename:
+        print "Loading %s..."%filename
+        # load the sgf
+        kp.parser.fc("loadsgf", filename)
+
+    # limit the type of events allowed
+    pygame.event.set_allowed(KEYUP)
+
+    # all set!
+    print "Ready."
+    while 1:
+        pygame.event.pump()
+        event = pygame.event.wait()
+        if event.type == QUIT:
+            kp.command("quit")
+        elif event.type == KEYUP:
+            kp(event.key)
+        elif event.type == MOUSEMOTION:
+            kp.parser.fc("mousepos", *pygame.mouse.get_pos())
+        mousepressed = pygame.mouse.get_pressed()
+        # Update the mouse-position if a button is pressed
+        if 1 in mousepressed:
+            kp.parser.fc("mousepos", *pygame.mouse.get_pos())
+        kp(mousepressed)
+        kp.refresh()
+
+if __name__ == "__main__":
+    main()
