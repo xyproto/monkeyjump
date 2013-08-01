@@ -8,9 +8,9 @@ Monkeyjump is a program for messing around with GNU Go and SGF-files.
 
 I wrote it back in 2005 but decided to release it in 2013, since it was somewhat fun.
 
-Author: Alexander Rødseth <rodseth@gmail.com>
-License: GPL2
-Version: 0.4
+* Author: Alexander Rødseth <rodseth@gmail.com>
+* License: GPL2
+* Version: 0.4
 
 
 Quickstart
