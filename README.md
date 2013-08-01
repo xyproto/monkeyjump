@@ -82,4 +82,4 @@ which are included in his GPL-ed program named "uliGo".
 Screenshot
 ----------
 
-[](screenshots/2005.png)
+![](screenshots/2005.png)
