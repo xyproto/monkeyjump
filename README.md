@@ -64,8 +64,8 @@ You can use it for:
 Requirements
 ------------
 
-Python2 and Pygame (Psyco is optional)
-GnuGo or another GTP-speaking go-playing computer program
+* Python2 and Pygame (Psyco is optional)
+* GnuGo or another GTP-speaking go-playing computer program
 
 
 Configuration
