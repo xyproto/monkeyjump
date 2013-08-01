@@ -78,3 +78,8 @@ Thanks
 
 Thanks to Ulrich Goertz (u@g0ertz.de) for the images of the board and the black and white stones,
 which are included in his GPL-ed program named "uliGo".
+
+Screenshot
+----------
+
+[](screenshots/2005.png)
