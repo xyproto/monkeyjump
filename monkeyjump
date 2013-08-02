@@ -11,8 +11,6 @@
 #   July 2013
 #
 
-print "Starting Monkeyjump..."
-
 import pygame
 from pygame.locals import *
 from burnlib.scriptlib import KeyParser
@@ -69,14 +67,21 @@ def main():
             BOARDSIZE = 19
         file.close()
 
-    print "Loading keybindings..."
     kp = KeyParser(os.path.join(CONFDIR, "keybindings.conf"), RESOLUTION, FULLSCREEN, BOARDSIZE, THEMEDIR, CONFDIR)
+
+    windowtitle = 'Monkeyjump'
 
     # is the argument a filename?
     if filename:
         print "Loading %s..."%filename
         # load the sgf
         kp.parser.fc("loadsgf", filename)
+        print "ok"
+        # change the window title
+        windowtitle += ' - ' + filename
+
+    # set the window title
+    pygame.display.set_caption(windowtitle)
 
     # limit the type of events allowed
     pygame.event.set_allowed(KEYUP)

@@ -18,5 +18,4 @@ Planned features
 * An UML-diagram could be nice?
 * Make it possible to use transparent images for the stones
 * Add desktop shortcut and icon for the Arch Linux package
-* Remove the startup messages
 * Port to Python 3
