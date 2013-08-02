@@ -2,8 +2,11 @@
 #-*-coding:utf-8-*-
 #vim: set enc=utf8:
 #
-# author:   Alexander Rødseth <alexanro@stud.ntnu.no>
-# date:     July 2004 & April 2005
+# author:   Alexander Rødseth <rodseth@gmail.com>
+#
+# changes:  July 2004
+#           April 2005
+#           July 2013
 #
 
 import pygame
@@ -11,22 +14,24 @@ from pygame.locals import *
 #import apf
 #import bip
 from burnlib.common import addpath
+import os.path
 
 """
-Todo:
-    - Lag undo versjonen av alle effekter som har en "anti"-operasjon
-    - Implementer load og save (spesielt SVG er veldig interessant)
-    - Få store og små bilder til å fungere
-    - Lag mode-indikator control (basert på label?)
-    - Lag palett-control
-    - Lag label-control
-    - Lag textbox-control
-    - Lag et signal-system for controllene
-    - Lag en super-control
-    - Lag en button-control
-    - Bytt r, g, b, a med color
-    - Lag nettverks-support, for høy brife-faktor :)
-    - Plukk ut Go-koden til en egen fil
+TODO:
+
+* Create the undo version of all effects that can have an "opposite" operation
+* Implement load and save (especially for SVG)
+* Get large and tiny images to work
+* Create a mode-indicator control (based on a label control?)
+* Create a palette-control
+* Create a label-control
+* Create a textbox-control
+* Create a singnal-system for the controls
+* Create a super-control
+* Create a button-control
+* Use color instead of r, g, b, a
+* Refactor out the Go-related code to a separate file
+
 """
 
 def fullscreen_control(graphics, ControlClass, *args, **kw):
@@ -40,7 +45,7 @@ class Graphics(object):
 
     instanciated = False
 
-    def __init__(self, size=(640, 480), bpp=16, screen=True, fullscreen=False, BOARD=19):
+    def __init__(self, size=(640, 480), bpp=16, screen=True, fullscreen=False, BOARD=19, SPECIFIC_THEMEDIR="themes/uligo"):
 
         #print "Graphics size", BOARD
         
@@ -73,7 +78,7 @@ class Graphics(object):
         self.quickpixel = self.buffer.set_at
 
         # Load images
-        self.board = pygame.image.load(addpath("img/board.png"))
+        self.board = pygame.image.load(addpath(os.path.join(SPECIFIC_THEMEDIR, "board.png")))
         w, h = self.buffer.get_size()
         self.board = pygame.transform.scale(self.board, (w, h))
         # not perfect, not based on anythin other than hunch, but it sortof works
@@ -139,8 +144,8 @@ class Graphics(object):
                         pos = (int(xspace * x) + margin, int(yspace * y) + margin)
                         pygame.draw.circle(self.board, (0, 0, 0), pos, 4, 0)
 
-        self.black = pygame.image.load(addpath("img/black.png"))
-        self.white = pygame.image.load(addpath("img/white.png"))
+        self.black = pygame.image.load(addpath(os.path.join(SPECIFIC_THEMEDIR, "black.png")))
+        self.white = pygame.image.load(addpath(os.path.join(SPECIFIC_THEMEDIR, "white.png")))
 
     def refresh_screen(self):
         screen = pygame.display.get_surface()
@@ -251,7 +256,7 @@ class Control(object):
     """ A general control """
 
     def __init__(self, screenpos=(0, 0), buffersize=(20, 20), bpp=32,
-            borderwidth=2, BOARD=19):
+            borderwidth=2, BOARD=19, SPECIFIC_THEMEDIR="themes/uligo"):
 
         # Set internal variables
         self._screenpos = screenpos
@@ -262,7 +267,7 @@ class Control(object):
         #print "Control BOARD", BOARD
 
         # Create a backbuffer based on internal variables
-        self._graphics = Graphics(self._buffersize, self._bpp, False, BOARD=BOARD)
+        self._graphics = Graphics(self._buffersize, self._bpp, False, BOARD=BOARD, SPECIFIC_THEMEDIR=SPECIFIC_THEMEDIR)
 
         # Todo: rename these here and in PixelGrid
         self.gfx_width = self._graphics.getWidth()

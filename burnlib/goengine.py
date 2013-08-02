@@ -19,7 +19,7 @@ from burnlib.common import addpath
 class GoGrid(Control):
 
     def __init__(self, screenpos=(0, 0), buffersize=(128, 128),
-            gridsize=(19, 19), bpp=32, borderwidth=2, filename="gnugocmd.conf"):
+            gridsize=(19, 19), bpp=32, borderwidth=2, gnugoconf="gnugocmd.conf", SPECIFIC_THEMEDIR="themes/uligo"):
 
         #print "GoGrid size", gridsize
 
@@ -28,7 +28,7 @@ class GoGrid(Control):
 
         self.BOARD = gridsize[0]
 
-        gnugocmd = open(addpath(filename)).read().strip()
+        gnugocmd = open(addpath(gnugoconf)).read().strip()
         self.to_gnugo, self.from_gnugo = os.popen2(gnugocmd)
         self._gtpnr = 1
         self.gridwidth = gridsize[0]
@@ -40,7 +40,7 @@ class GoGrid(Control):
         self._b_captures = 0
         self._w_captures = 0
 
-        Control.__init__(self, screenpos, buffersize, bpp, borderwidth, self.BOARD)
+        Control.__init__(self, screenpos, buffersize, bpp, borderwidth, self.BOARD, SPECIFIC_THEMEDIR)
 
         self._fgcolor = (64, 128, 255, 255)
         self._bgcolor = (150, 50, 0, 255)

@@ -12,6 +12,7 @@ from burnlib.imageengine import fullscreen_control
 from burnlib.configreader import Keybindings
 from sys import exit as sysexit
 import os
+import os.path
 
 def sysexitwrapper(exitcode=0):
     """ Quits the entire program with an exitcode """
@@ -23,11 +24,16 @@ def displaywrapper(fn):
 
 class Parser(object):
 
-    def __init__(self, resolution=(640, 480), fullscreen=False, BOARD=19):
+    def __init__(self, resolution=(640, 480), fullscreen=False, BOARD=19, THEMEDIR="themes", CONFDIR="."):
         # Setup the screen and a GoGrid
         #print "parser size", BOARD
-        self.screen = Graphics(size=resolution, fullscreen=fullscreen, BOARD=BOARD)
-        self.gogrid = fullscreen_control(self.screen, GoGrid, bpp=32, gridsize=(BOARD, BOARD))
+
+        themeconf = open(os.path.join(CONFDIR, "theme.conf")).read().split("\n")[:-1]
+        themename = [line for line in themeconf if not line.strip().startswith("#")][0].strip()
+        specific_themedir = os.path.join(THEMEDIR, themename)
+
+        self.screen = Graphics(size=resolution, fullscreen=fullscreen, BOARD=BOARD, SPECIFIC_THEMEDIR=specific_themedir)
+        self.gogrid = fullscreen_control(self.screen, GoGrid, bpp=32, gridsize=(BOARD, BOARD), gnugoconf=os.path.join(CONFDIR, "gnugocmd.conf"), SPECIFIC_THEMEDIR=specific_themedir)
         self.refresh()
 
         # Create a function-collection and register functions
@@ -116,11 +122,11 @@ class Parser(object):
 
 class KeyParser(object):
 
-    def __init__(self, filename="keybindings", resolution=(640, 480),
-            fullscreen=False, BOARD=19):
+    def __init__(self, filename="keybindings.conf", resolution=(640, 480),
+            fullscreen=False, BOARD=19, THEMEDIR="themes", CONFDIR="."):
         #print "kp boardsize", BOARD
         self.keybindings = Keybindings(filename)
-        self.parser = Parser(resolution=resolution, fullscreen=fullscreen, BOARD=BOARD)
+        self.parser = Parser(resolution=resolution, fullscreen=fullscreen, BOARD=BOARD, THEMEDIR=THEMEDIR, CONFDIR=CONFDIR)
 
     def __call__(self, keycode):
         for bound_keycode, command in self.keybindings.items():

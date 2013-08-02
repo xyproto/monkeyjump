@@ -10,7 +10,7 @@ I wrote it back in 2005 but decided to release it in 2013, since it was somewhat
 
 * Author: Alexander Rødseth <rodseth@gmail.com>
 * License: GPL2
-* Version: 0.4
+* Version: 0.5
 
 
 Screenshots
