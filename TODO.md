@@ -19,3 +19,4 @@ Planned features
 * Make it possible to use transparent images for the stones
 * Add desktop shortcut and icon for the Arch Linux package
 * Port to Python 3
+* Man page
