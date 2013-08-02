@@ -13,6 +13,12 @@ I wrote it back in 2005 but decided to release it in 2013, since it was somewhat
 * Version: 0.4
 
 
+Screenshots
+-----------
+
+![](screenshots/2005.png)
+
+
 Quickstart
 ----------
 
@@ -32,7 +38,7 @@ f to view the final score
 backspace to clear the board and start a new game
 
 q to quit
-u is undo
+u to undo
 e estimates the score
 ```
 
@@ -86,9 +92,3 @@ Thanks
 
 Thanks to Ulrich Goertz (u@g0ertz.de) for the images of the board and the black and white stones,
 which are included in his GPL-ed program [uliGo](http://www.u-go.net/uligo/).
-
-
-Screenshots
------------
-
-![](screenshots/2005.png)
