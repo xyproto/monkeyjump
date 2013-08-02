@@ -8,7 +8,7 @@ Monkeyjump is a program for messing around with GNU Go and SGF-files.
 
 I wrote it back in 2005 but decided to release it in 2013, since it was somewhat fun.
 
-* Author: Alexander Rødseth <rodseth@gmail.com>
+* Author: Alexander RÃ¸dseth <rodseth@gmail.com>
 * License: GPL2
 * Version: 0.4
 
@@ -49,7 +49,6 @@ General information
 What can I use it for?
 ----------------------
 
-You can use it for:
 * Interfacing GNU Go via GTP (the program speaks GTP for you)
 * Guessing your way through professional games you might have stored as SGF
 * Playing Go against GNU Go, while beeing able to edit the board at any time (this means you have to check for yourself if your move is valid)
@@ -79,16 +78,17 @@ Configuration
 Known bugs
 ----------
 
-- Loading SGF-files doesn't always give the correct positions, unfortunately. Pull requests are welcome.
+* Loading SGF-files doesn't always give the correct positions. Patches and pull requests are welcome.
 
 
 Thanks
 -------
 
 Thanks to Ulrich Goertz (u@g0ertz.de) for the images of the board and the black and white stones,
-which are included in his GPL-ed program named "uliGo".
+which are included in his GPL-ed program [uliGo](http://www.u-go.net/uligo/).
 
-Screenshot
-----------
+
+Screenshots
+-----------
 
 ![](screenshots/2005.png)
