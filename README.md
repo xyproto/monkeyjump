@@ -17,6 +17,7 @@ Screenshots
 -----------
 
 ![](screenshots/2005.png)
+![](screenshots/2013-08-02.png)
 
 
 Quickstart
