@@ -2,7 +2,7 @@
 #-*-coding:utf-8-*-
 #vim: set enc=utf8:
 #
-# author:   Alexander Rødseth <alexanro@stud.ntnu.no>
+# author:   Alexander Rødseth <rodseth@gmail.com>
 # date:     May 2005
 #
 # TODO: Use the test-modules that comes with Python and red-green-refactor
