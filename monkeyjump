@@ -9,6 +9,7 @@
 #   Tue Sep 27 15:10:06 CEST 2005
 #   Mon Oct 10 13:04:56 CEST 2005
 #   July 2013
+#   August 2013
 #
 
 import pygame
@@ -86,13 +87,11 @@ def main():
     # limit the type of events allowed
     pygame.event.set_allowed(KEYUP)
 
-    # all set!
-    print "Ready."
-    while 1:
+    while True:
         pygame.event.pump()
         event = pygame.event.wait()
         if event.type == QUIT:
-            kp.command("quit")
+            break
         elif event.type == KEYUP:
             kp(event.key)
         elif event.type == MOUSEMOTION:
@@ -103,6 +102,8 @@ def main():
             kp.parser.fc("mousepos", *pygame.mouse.get_pos())
         kp(mousepressed)
         kp.refresh()
+
+    pygame.quit()
 
 if __name__ == "__main__":
     main()

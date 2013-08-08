@@ -74,6 +74,8 @@ class Graphics(object):
         else:
             self.buffer = pygame.Surface(self.RES)
 
+        pygame.display.set_caption("Loading...")
+
         # A function
         self.quickpixel = self.buffer.set_at
 
