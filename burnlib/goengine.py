@@ -1075,8 +1075,12 @@ class GoGrid(Control):
 
     def gnugo_gamelogic(self):
         """ Use the game-logic of GnuGo, import the stones """
-        b = int(self.gtp("captures black"))
-        w = int(self.gtp("captures white"))
+        try:
+            b = int(self.gtp("captures black"))
+            w = int(self.gtp("captures white"))
+        except ValueError:
+            print("error: could not get captures black or captures white from the GTP engine")
+            return
         if not b == self._b_captures:
             self.gnugo2pixels()
             self._b_captures = b
