@@ -9,12 +9,12 @@ def read(fname):
 setup(
     name = "monkeyjump",
     version = "0.5",
-    author = "Alexander Rødseth",
+    author = "Alexander F. Rødseth",
     author_email = "rodseth@gmail.com",
     description = ("Minimalistic GUI with keybindings for GnuGo and other GTP applications."),
     license = "GPL2",
     keywords = "go gnugo pygame python game gtp board",
-    url = "http://github.com/xyproto/monkeyjump",
+    url = "https://github.com/xyproto/monkeyjump",
     packages=['burnlib'],
     long_description=read('README.md'),
     classifiers=[
