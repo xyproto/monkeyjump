@@ -1,27 +1,18 @@
-Monkeyjump
-==========
+# Monkeyjump
 
-Overview
---------
+## Overview
 
 Monkeyjump is a program for messing around with GNU Go and SGF-files.
 
 I wrote it back in 2005 but decided to release it in 2013, since it was somewhat fun.
 
-* Author: Alexander Rødseth <rodseth@gmail.com>
-* License: GPL2
-* Version: 0.5
-
-
-Screenshots
------------
+## Screenshots
 
 ![](screenshots/2005.png)
 ![](screenshots/2013-08-02_1.png)
 
 
-Quickstart
-----------
+## Quickstart
 
 Checkout the project and run:
 
@@ -43,8 +34,7 @@ u to undo
 e estimates the score
 ```
 
-General information
--------------------
+## General information
 
 * GNU Go is a program that can play Go
 * The term "monkeyjump" is used in Go
@@ -53,8 +43,7 @@ General information
   Here's the Wikipedia entry: http://en.wikipedia.org/wiki/Go_(board_game)
 
 
-What can I use it for?
-----------------------
+## What can I use it for?
 
 * Interfacing GNU Go via GTP (the program speaks GTP for you)
 * Guessing your way through professional games you might have stored as SGF
@@ -67,29 +56,33 @@ What can I use it for?
 * Checking what GNU Go would have played
 
 
-Requirements
-------------
+## Requirements
 
 * Python2 and Pygame (Psyco is optional)
 * GnuGo or another GTP-speaking go-playing computer program
 
 
-Configuration
--------------
+## Configuration
 
 * Edit the file "gnugocmd.conf" in order to enable your favorite gtp-compatible program ("gnugo --mode gtp" should work).
 * Edit the file "keybindings.conf", so that you know what all the keys does.
 * Start the program. You can give a board size as the first argument (9, 13 and 19 are common)
 
 
-Known bugs
-----------
+## Known bugs
 
 * Loading SGF-files doesn't always give the correct positions. Patches and pull requests are welcome.
+* Does not work with Leela Zera or Katago yet.
 
 
-Thanks
--------
+## Thanks
 
 Thanks to Ulrich Goertz (u@g0ertz.de) for the images of the board and the black and white stones,
 which are included in his GPL-ed program [uliGo](http://www.u-go.net/uligo/).
+
+
+## General info
+
+* Author: Alexander F. Rødseth
+* License: GPL2
+* Version: 0.5
