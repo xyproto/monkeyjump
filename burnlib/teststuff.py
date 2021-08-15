@@ -39,7 +39,7 @@ class TestAll:
         assert("C17" == self.g.convertpos("cr", fromtype="sgf", totype="gnugo"))
         assert("C1" == self.g.convertpos("ca", fromtype="sgf", totype="gnugo"))
 
-        print "conversion seems to be working"
+        print("conversion seems to be working")
 
 
 if __name__ == "burnlib.teststuff":

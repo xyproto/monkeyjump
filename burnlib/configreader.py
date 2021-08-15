@@ -38,7 +38,7 @@ class Keybindings(dict):
             try:
                 keycode = eval("K_" + keyname.upper())
             except NameError:
-                print "Unable to find keycode for key:", keyname
+                print("Unable to find keycode for key:", keyname)
                 return
         return keycode
 

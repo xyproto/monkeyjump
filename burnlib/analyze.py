@@ -9,6 +9,7 @@
 import pygame
 from pygame.locals import *
 import math
+from functools import reduce
 
 
 class Analyzer(object):
@@ -72,13 +73,13 @@ class Analyzer(object):
         """Helper function for getting hold of the black, white and empty fields on a goboard."""
         pixels = self.goboard.pixels
         # Get all coordinates for the black stones
-        self.black = [poscolor[0] for poscolor in pixels.items() if poscolor[1][0] == 0]
+        self.black = [poscolor[0] for poscolor in list(pixels.items()) if poscolor[1][0] == 0]
         # Get all coordinates for the white stones
-        self.white = [poscolor[0] for poscolor in pixels.items() if poscolor[1][0] == 255]
+        self.white = [poscolor[0] for poscolor in list(pixels.items()) if poscolor[1][0] == 255]
         # Get all coordinates for the empty points
         self.empty = []
-        for x in xrange(self.goboard.gridwidth):
-            for y in xrange(self.goboard.gridwidth):
+        for x in range(self.goboard.gridwidth):
+            for y in range(self.goboard.gridwidth):
                 if (x, y) not in pixels:
                     self.empty.append((x, y))
 
@@ -129,7 +130,7 @@ class Analyzer(object):
         gpos = None
         oldgpos = None
         bestcount = 0
-        for i in xrange(repeat):
+        for i in range(repeat):
             surface = self.blur4(surface, exclude, divnum)
             if gpos:
                 oldgpos = gpos
@@ -143,7 +144,7 @@ class Analyzer(object):
             #niceorder = reduce(lambda x, y: x + y, zip(range(w)[-1:(w/2)-1:-1], range(w)[:w/2]))
             #niceorder = reduce(lambda x, y: x + y, zip(range(w)[:w/2], range(w)[-1:(w/2)-1:-1]))[::-1]
             #niceorder = reduce(lambda x, y: x + y, zip(range(w)[-1:(w/2)-1:-1], range(w)[:w/2]))[::-1]
-            niceorder = reduce(lambda x, y: x + y, zip(range(w)[:w/2], range(w)[-1:(w/2)-1:-1]))
+            niceorder = reduce(lambda x, y: x + y, list(zip(list(range(w))[:w/2], list(range(w))[-1:(w/2)-1:-1])))
 #            log = open("biaslog.txt", "w")
             for x in niceorder:
                 for y in niceorder:
@@ -193,7 +194,7 @@ class Analyzer(object):
                     elif g == greenest:
                         bestcount += 1
             value = greenest / (bestcount + 1)
-            print "gpos", gpos, "value", value
+            print("gpos", gpos, "value", value)
 
 #            if ((value < 500) or ((oldbestcount < bestcount) or (greenest < threshold))) and oldgpos:
             if value < threshold:
@@ -201,8 +202,8 @@ class Analyzer(object):
                     continue
                 gpos = oldgpos
                 bestcount = oldbestcount
-                print "Finished!"
-                print "GPOS", gpos, "VALUE", greenest, "BESTCOUNT", bestcount
+                print("Finished!")
+                print("GPOS", gpos, "VALUE", greenest, "BESTCOUNT", bestcount)
                 surface.set_at(gpos, (255, 255, 255))
         #        log.write("\n\nSELECTED: " + str(gpos) + "\n\n")
                 return surface, gpos
@@ -218,8 +219,8 @@ class Analyzer(object):
         """
         w = self.goboard.gridwidth
         newsurface = pygame.Surface((w, w))
-        for x in xrange(w):
-            for y in xrange(w):
+        for x in range(w):
+            for y in range(w):
                 if (x, y) in exclude:
                     continue
                 color = surface.get_at((x, y))
@@ -247,7 +248,7 @@ class Analyzer(object):
                 try:
                     newsurface.set_at((x, y), (int(r), int(g), int(b)))
                 except TypeError:
-                    print "set_at", (x, y), (r, g, b)
+                    print("set_at", (x, y), (r, g, b))
         return newsurface
 
     def medianblur4(self, surface, exclude, divnum=4.0):
@@ -264,8 +265,8 @@ class Analyzer(object):
         """
         w = self.goboard.gridwidth
         surface = pygame.Surface((w, w))
-        for x in xrange(w):
-            for y in xrange(w):
+        for x in range(w):
+            for y in range(w):
                 r = redsurface.get_at((x, y))[0]
                 g = greensurface.get_at((x, y))[1]
                 b = bluesurface.get_at((x, y))[2]
@@ -293,7 +294,7 @@ class Analyzer(object):
         surface = pygame.Surface((self.goboard.gridwidth, self.goboard.gridwidth))
 
         # Create the image of the black liberties
-        for numpos, liberties in self._blackliberties.items():
+        for numpos, liberties in list(self._blackliberties.items()):
             color = (int((liberties / float(maxlib)) * 255.0), 0, 0)
             #print "color", color
             surface.set_at(numpos, color)
@@ -324,7 +325,7 @@ class Analyzer(object):
         surface = pygame.Surface((self.goboard.gridwidth, self.goboard.gridwidth))
 
         # Create the image of the black liberties
-        for numpos, liberties in self._whiteliberties.items():
+        for numpos, liberties in list(self._whiteliberties.items()):
             color = (0, 0, int((liberties / float(maxlib)) * 255.0))
             #print "color", color
             surface.set_at(numpos, color)
@@ -372,13 +373,13 @@ class Analyzer(object):
         surface = pygame.Surface((self.goboard.gridwidth, self.goboard.gridwidth))
 
         # Create the image of the black liberties
-        for numpos, liberties in voidliberties.items():
+        for numpos, liberties in list(voidliberties.items()):
             color = (0, int((liberties / float(maxlib)) * 255.0), 0)
             #print "color", color
             try:
                 surface.set_at(numpos, color)
             except TypeError:
-                print "TYPEERROR", "color", color
+                print("TYPEERROR", "color", color)
 
         # Exclude the black positions
         exclude = self.black[:]

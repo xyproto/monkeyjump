@@ -78,7 +78,7 @@ class Parser(object):
         self.fc.add("newaswhite", self.gogrid.newaswhite, ["str"])
         self.fc.add("loadsgf", self.gogrid.loadsgf, ["str"])
         self.fc.add("reloadsgf", self.gogrid.loadsgf)
-        self.fc.add("next", self.gogrid.next)
+        self.fc.add("next", self.gogrid.__next__)
         self.fc.add("nextorload", self.gogrid.nextorload)
         self.fc.add("previous", self.gogrid.previous)
         self.fc.add("savesgf", self.gogrid.savesgf, ["str"])
@@ -129,7 +129,7 @@ class KeyParser(object):
         self.parser = Parser(resolution=resolution, fullscreen=fullscreen, BOARD=BOARD, THEMEDIR=THEMEDIR, CONFDIR=CONFDIR)
 
     def __call__(self, keycode):
-        for bound_keycode, command in self.keybindings.items():
+        for bound_keycode, command in list(self.keybindings.items()):
             if keycode == bound_keycode:
                 self.parser(*command)
 
@@ -181,7 +181,7 @@ class ParameterChecker(object):
         self._type = "BUG: unset type-string!"
         # Is this a "special kind of type"
         if type(exampleType) == type(type):
-            print "Warning! Type is of type type!"
+            print("Warning! Type is of type type!")
         if type(exampleType) == type(str()) and exampleType in ["byte"]:
             if exampleType == "byte":
                 self._type = "byte"
@@ -221,7 +221,7 @@ class ParameterListChecker(object):
     """
 
     def __init__(self, typelist):
-        self.validators = map(ParameterChecker, typelist)
+        self.validators = list(map(ParameterChecker, typelist))
 
     def valid(self, values):
         got = len(values)
@@ -240,13 +240,13 @@ class ParameterListChecker(object):
                 return True
 
             # Some params are wrong, break occured
-            print 'Parameter nr %i is invalid, wanted type %s, got type %s. Look: %s' % error_info
+            print('Parameter nr %i is invalid, wanted type %s, got type %s. Look: %s' % error_info)
             return False
         else:
             if got < want:
-                print "Too few parameters. I wanted %i but got %i." % (want, got)
+                print("Too few parameters. I wanted %i but got %i." % (want, got))
             else:
-                print "Too many parameters. I wanted %i but got %i." % (want, got)
+                print("Too many parameters. I wanted %i but got %i." % (want, got))
             return False
 
 class FunctionWrapper(object):
@@ -280,7 +280,7 @@ class FunctionCollection(object):
             self._functions[alias] = FunctionWrapper(function, paramTypeList)
             return True
         else:
-            print "That function is already defined."
+            print("That function is already defined.")
             return False
 
     def remove(self, alias):
@@ -288,14 +288,14 @@ class FunctionCollection(object):
             del self._functions[alias]
             return True
         else:
-            print "Unable to find the function that was set for removal."
+            print("Unable to find the function that was set for removal.")
             return False
 
     def __call__(self, alias, *parameters):
         if alias in self._functions:
             return self._functions[alias](*parameters)
         else:
-            print "Unable to find the given function."
+            print("Unable to find the given function.")
             return False
 
     def getParamList(self, alias):
@@ -303,7 +303,7 @@ class FunctionCollection(object):
         if alias in self._functions:
             return self._functions[alias].getParamTypeList()
         else:
-            print "Unable to find the given function:", alias
+            print("Unable to find the given function:", alias)
             return False
 
     # Deprecated
@@ -323,7 +323,7 @@ class FunctionCollection(object):
 
         def list_functions():
             """ Returns a sorted list of available functions """
-            l = self._functions.keys()
+            l = list(self._functions.keys())
             l.sort()
             return l
 
@@ -342,32 +342,32 @@ class FunctionCollection(object):
         self.add("help", docstr, ["str"])
         self.add("quit", sysexitwrapper, ["int"])
 
-        print
-        print "Welcome to the minimal console!"
-        print
-        print "Use list for available commands."
-        print "Use help to examine commands."
-        print "Use params to get a list of wanted parameters." 
-        print "Use ! in front of Python-expressions."
-        print
+        print()
+        print("Welcome to the minimal console!")
+        print()
+        print("Use list for available commands.")
+        print("Use help to examine commands.")
+        print("Use params to get a list of wanted parameters.") 
+        print("Use ! in front of Python-expressions.")
+        print()
 
         while 1:
             try:
-                cmd = raw_input("# ").strip()
+                cmd = input("# ").strip()
                 if len(cmd) > 0 and cmd[0] == "!":
-                    print eval(cmd[1:])
+                    print(eval(cmd[1:]))
                 elif len(cmd) > 0 and cmd.find("exit") == 0:
-                    print "Done with console."
+                    print("Done with console.")
                     break
                 else:
-                    plist = map(convert_if_possible, cmd.split(" "))
+                    plist = list(map(convert_if_possible, cmd.split(" ")))
                     result = self(*plist)
                     if not (result == None):
-                        print result
+                        print(result)
                 # Do all the script-commands in everytime now
-                map(self, everytime)
+                list(map(self, everytime))
             except IndexError:
-                print "IndexError"
+                print("IndexError")
             except EOFError:
-                print os.sep + "EOFError, exiting console"
+                print(os.sep + "EOFError, exiting console")
                 break

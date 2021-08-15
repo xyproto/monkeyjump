@@ -1,6 +1,6 @@
 #!/usr/bin/python
-#-*-coding:utf-8-*-
-#vim: set enc=utf8:
+# -*-coding:utf-8-*-
+# vim: set enc=utf8:
 #
 # author:   Alexander Rødseth <rodseth@gmail.com>
 # date:     May 2005
@@ -15,13 +15,26 @@ import os
 import pygame
 from pygame.locals import RLEACCEL
 from burnlib.common import addpath
+from subprocess import Popen, PIPE
+
+
+def popen2(command):
+    p = Popen(command, shell=True, stdin=PIPE, stdout=PIPE, close_fds=True)
+    return p.stdin, p.stdout
+
+
+def bs(x):
+    if type(x) != type(b""):
+        return x.encode("utf-8")
+    return x
+
 
 class GoGrid(Control):
 
     def __init__(self, screenpos=(0, 0), buffersize=(128, 128),
-            gridsize=(19, 19), bpp=32, borderwidth=2, gnugoconf="gnugocmd.conf", SPECIFIC_THEMEDIR="themes/uligo"):
+                 gridsize=(19, 19), bpp=32, borderwidth=2, gnugoconf="gnugocmd.conf", SPECIFIC_THEMEDIR="themes/uligo"):
 
-        #print "GoGrid size", gridsize
+        # print "GoGrid size", gridsize
 
         if type(gridsize) == type(int()):
             gridsize = (gridsize, gridsize)
@@ -29,7 +42,7 @@ class GoGrid(Control):
         self.BOARD = gridsize[0]
 
         gnugocmd = open(addpath(gnugoconf)).read().strip()
-        self.to_gnugo, self.from_gnugo = os.popen2(gnugocmd)
+        self.to_gnugo, self.from_gnugo = popen2(gnugocmd)
         self._gtpnr = 1
         self.gridwidth = gridsize[0]
         self.gtp("boardsize " + str(gridsize[0]))
@@ -50,7 +63,7 @@ class GoGrid(Control):
         if self.setSize(gridsize):
             self.topleftCursor()
             self.drawAll()
-        #else:
+        # else:
         #    assert(not "Illegal size of GoGrid, in __init__")
 
         # For quick "previous" functionality
@@ -69,13 +82,12 @@ class GoGrid(Control):
 
         self.illegal_ok = False
 
-
     def gtp(self, command):
         verbose = True
         cmd = str(self._gtpnr) + " " + command
         if verbose:
-            print cmd
-        self.to_gnugo.write(cmd + "\n")
+            print(cmd)
+        self.to_gnugo.write(bs(cmd + "\n"))
         self.to_gnugo.flush()
         status = self.from_gnugo.read(1)
         value = status
@@ -84,24 +96,24 @@ class GoGrid(Control):
             value += status
         assert(self.from_gnugo.read(1) == "\n")
         if verbose:
-            print value
+            print(value)
         self._gtpnr += 1
         return value[1 + len(str(self._gtpnr)):]
-    
+
     def showboard(self):
         cmd = str(self._gtpnr) + " " + "showboard"
-        print cmd
-        self.to_gnugo.write(cmd + "\n")
+        print(cmd)
+        self.to_gnugo.write(bs(cmd + "\n"))
         self.to_gnugo.flush()
         s = ""
         # y is not used, it's just a counter
-        for y in xrange(self.gridwidth + 4):
+        for y in range(self.gridwidth + 4):
             byte = self.from_gnugo.read(1)
             s += byte
             while not byte == "\n":
                 byte = self.from_gnugo.read(1)
                 s += byte
-        print s
+        print(s)
         self._gtpnr += 1
 
     def showlastmove(self):
@@ -129,7 +141,7 @@ class GoGrid(Control):
         newwidth = int(self._buffersize[0] * realpercentage)
         newheight = int(self._buffersize[1] * realpercentage)
         self.resize((newwidth, newheight))
-    
+
     def centerCursor(self):
         """ Set the cursor-position based on the gridsize """
         self._x = self._width / 2
@@ -151,7 +163,7 @@ class GoGrid(Control):
         self._oldx = self._x
         self._oldy = self._y
         self.drawAll()
-    
+
     def resize(self, controlsize):
         """
         controlsize is not in grid-coordinates, but in screen-coordinates
@@ -159,18 +171,18 @@ class GoGrid(Control):
 
         # Check the size
         if (controlsize[0] < self._width) and (controlsize[1] < self._height):
-            print "Controlsize less than imagesize not implemented"
+            print("Controlsize less than imagesize not implemented")
             return
 
         # Re-initialize the graphics, deleting the screen-contents,
         # but not the grid-contents
         self.__init__(self._screenpos, controlsize, self._bpp,
-                self._borderwidth)
+                      self._borderwidth)
 
         # Set the size and draw, if possible
         if self.setSize(self._gridsize):
             self.drawAll()
-        #else:
+        # else:
         #    assert(not "Illegal size of GoGrid, in resize")
 
     def setSize(self, gridsize):
@@ -178,7 +190,7 @@ class GoGrid(Control):
         width, height = gridsize
         self._gridsize = gridsize
         if width > self.gfx_width or height > self.gfx_height:
-            print "Too small image compared to gridsize"
+            print("Too small image compared to gridsize")
             return False
         self._xmax = width - 1
         self._ymax = height - 1
@@ -187,17 +199,17 @@ class GoGrid(Control):
         self._cellwidth = (self.gfx_width / float(self._width))
         self._cellheight = (self.gfx_height / float(self._height))
         if (self._cellwidth <= 0) or (self._cellheight <= 0):
-            print "Size < 0 doesn't work very well with Pygame..."
+            print("Size < 0 doesn't work very well with Pygame...")
             return False
         if not (self._cellwidth % 2) and not (self._cellheight % 2):
-            #print "Optimal size"
+            # print "Optimal size"
             self._optimal = True
         else:
-            #print "Non-optimal size"
+            # print "Non-optimal size"
             self._optimal = False
             # return False
         return True
-        
+
     def make_transp(self, image):
         """
         This function simply takes the topleft color-value and uses it to make
@@ -226,19 +238,19 @@ class GoGrid(Control):
         surfprops["bpp"] = self._graphics.getBpp()
         surfprops["screen"] = False
         surfprops["BOARD"] = self.BOARD
-        #print "getSurf BOARD", self.BOARD
+        # print "getSurf BOARD", self.BOARD
         graphics = Graphics(**surfprops)
-        for pos, color in self.pixels.items():
+        for pos, color in list(self.pixels.items()):
             graphics.quickpixel(pos, color)
         return graphics.getSurf()
 
     def savetransp(self, fn):
         """ Saves an image to a file, and makes it transparent as well """
         self.save(fn, True)
-    
+
     def save(self, fn, transp=False):
         """ Saves an image to a file """
-        print "Saving %s..." % fn
+        print("Saving %s..." % fn)
         ext = splitext(fn)[1].lower()
         if ext in [".bmp", ".tga"]:
             try:
@@ -247,9 +259,9 @@ class GoGrid(Control):
                 else:
                     pygame.image.save(self.getSurf(), fn)
             except pygame.error:
-                print "Pygame was unable to save (%s)." % fn
+                print("Pygame was unable to save (%s)." % fn)
         else:
-            print "Unknown file format (%s)." % ext
+            print("Unknown file format (%s)." % ext)
 
     def g2s(self, x, y):
         """ Gridspace to screenspace """
@@ -316,8 +328,8 @@ class GoGrid(Control):
             of -= 2
         sx -= of
         sy -= of
-        
-        if pos in self.pixels.keys():
+
+        if pos in list(self.pixels.keys()):
             # If the pixel exists, draw it with the color it has
             r, g, b, a = self.pixels[pos]
             #self._graphics.box(sx, sy, sw, sh, r, g, b, a)
@@ -327,13 +339,13 @@ class GoGrid(Control):
             r, g, b, a = self._bgcolor
             #self._graphics.box(sx, sy, sw, sh, r, g, b, a)
             self._graphics.magicellipse(sx, sy, sw, sh, r, g, b, a)
-    
+
     def drawAll(self):
         #w, h = self.getCellSize()
         # Clear
         self._graphics.clear(self._bgcolor)
         # Pixels
-        for pos in self.pixels.keys():
+        for pos in list(self.pixels.keys()):
             sx, sy, sw, sh = self.getScreenRect(pos[0], pos[1])
 
             # TEMPORARY (trial and error-based)
@@ -348,7 +360,7 @@ class GoGrid(Control):
                 of -= 2
             sx -= of
             sy -= of
-            
+
             r, g, b, a = self.pixels[pos]
             self._graphics.magicellipse(sx, sy, sw, sh, r, g, b, a)
         self.drawCursor()
@@ -397,7 +409,7 @@ class GoGrid(Control):
         sw, sh = self.getCellSize()
         sx, sy = self.g2s(self._x, self._y)
         if (sw < 4) or (sh < 4):
-            #print "pixelcursor!"
+            # print "pixelcursor!"
             sx = int(sx + sw / 2.0)
             sy = int(sy + sh / 2.0)
 
@@ -413,7 +425,7 @@ class GoGrid(Control):
                 of -= 2
             sx -= of
             sy -= of
-            
+
             self._graphics.pixel(sx, sy, r, g, b, a)
         else:
             woff = sw / 4
@@ -433,7 +445,7 @@ class GoGrid(Control):
 
             #self._graphics.rect(x + woff, y + hoff, w - woff * 2, h - hoff * 2, r, g, b, a, 1)
             self._graphics.ellipse(sx + woff - of, sy + hoff - of, sw - woff * 2, sh - hoff * 2, r, g, b, a, 1)
-    
+
     def cursorMoved(self):
         self.drawPixelHere()
         self.drawPixelLast()
@@ -449,10 +461,10 @@ class GoGrid(Control):
     # *********************
 
     def put(self, x, y, r, g, b, a):
-        self.pixels[(x,y)] = (r, g, b, a)
+        self.pixels[(x, y)] = (r, g, b, a)
 
     def get(self, x, y):
-        if (x,y) in self.pixels:
+        if (x, y) in self.pixels:
             return self.pixels[(x, y)]
         else:
             return False
@@ -468,7 +480,7 @@ class GoGrid(Control):
         self.colorChanged()
 
     def pixelHere(self):
-        return (self._x, self._y) in self.pixels.keys()
+        return (self._x, self._y) in list(self.pixels.keys())
 
     def getHere(self):
         return self.get(self._x, self._y)
@@ -479,7 +491,7 @@ class GoGrid(Control):
             self.togglecolor(0, 0, 0)
             self.gnugo_gamelogic()
         elif self.illegal_ok:
-            print "Illegal move, but here you go."
+            print("Illegal move, but here you go.")
             self.togglecolor(0, 0, 0)
         else:
             return False
@@ -491,7 +503,7 @@ class GoGrid(Control):
             self.togglecolor(255, 255, 255)
             self.gnugo_gamelogic()
         elif self.illegal_ok:
-            print "Illegal move, but here you go."
+            print("Illegal move, but here you go.")
             self.togglecolor(255, 255, 255)
         else:
             return False
@@ -501,10 +513,10 @@ class GoGrid(Control):
         self.illegal_ok = not self.illegal_ok
 
     def gnugowhite(self):
-        #print "GnuGo is thinking..."
+        # print "GnuGo is thinking..."
         gnugopos = self.gtp("genmove white").strip()
         pygame.event.clear()
-        #print gnugopos
+        # print gnugopos
         if gnugopos not in ["PASS", "resign"]:
             self.playhere("W", gnugopos)
             self.gnugo_gamelogic()
@@ -517,10 +529,10 @@ class GoGrid(Control):
     def status(self):
         self.showlastmove()
         self.gtp("estimate_score")
-        print "level", self._level
+        print("level", self._level)
 
     def nextlevel(self):
-        self._level += 3 
+        self._level += 3
         if self._level > 9:
             self._level = 0
         self.level(str(self._level))
@@ -532,7 +544,7 @@ class GoGrid(Control):
             self.myplay("black")
         else:
             self.gnugoblack()
-        print "level", self._level
+        print("level", self._level)
 
     def playblackorwhite(self, mode="", color="black"):
         if color == "black":
@@ -551,7 +563,7 @@ class GoGrid(Control):
                     self.myplay("black")
                 else:
                     self.gnugoblack()
-    
+
     def playblack(self, mode=""):
         self.playblackorwhite(mode, "black")
 
@@ -564,10 +576,10 @@ class GoGrid(Control):
         sysexit(int(exitcode))
 
     def gnugoblack(self):
-        #print "GnuGo is thinking..."
+        # print "GnuGo is thinking..."
         gnugopos = self.gtp("genmove black").strip()
         pygame.event.clear()
-        #print gnugopos
+        # print gnugopos
         if gnugopos not in ["PASS", "resign"]:
             self.playhere("B", gnugopos)
             self.gnugo_gamelogic()
@@ -581,19 +593,19 @@ class GoGrid(Control):
         lines = []
         first = True
         cmd = str(self._gtpnr) + " " + cmd
-        print cmd
-        self.to_gnugo.write(cmd + "\n")
+        print(cmd)
+        self.to_gnugo.write(bs(cmd + "\n"))
         self.to_gnugo.flush()
         neste = ""
         while neste != "\n":
             # 1. Read until \n
-            s = neste 
+            s = neste
             byte = self.from_gnugo.read(1)
             while not byte == "\n":
                 #lastbyte = byte
                 s += byte
                 byte = self.from_gnugo.read(1)
-            print s
+            print(s)
             if first:
                 s = s[2 + len(str(self._gtpnr)):]
                 first = False
@@ -619,7 +631,7 @@ class GoGrid(Control):
           (good for practicing tsumego)
         """
         if self.history:
-            self.next()
+            next(self)
         else:
             self.loadsgf()
 
@@ -641,15 +653,15 @@ class GoGrid(Control):
                     self.lastplayed = "B"
 
     def play100moves(self):
-        for x in xrange(100):
+        for x in range(100):
             self.myplay("black")
             self.refresh_now()
             self.gtp("estimate_score")
             self.gnugowhite()
             self.refresh_now()
-        print "Done with 100"
+        print("Done with 100")
 
-    def next(self):
+    def __next__(self):
         self.guesscounter = 0
         self.boardhistory[self.history_index] = self.pixels.copy()
         self.cursorhistory[self.history_index] = self._x, self._y
@@ -658,15 +670,15 @@ class GoGrid(Control):
         try:
             colorpos = self.history[self.history_index]
         except IndexError:
-            #print "Empty history", self.history, self.history_index
+            # print "Empty history", self.history, self.history_index
             self.history_index -= 1
             return
         playercolor = colorpos[0]
         pos = colorpos[1:]
         if playercolor == "W":
-           self.gtp("play white " + pos)
+            self.gtp("play white " + pos)
         else:
-           self.gtp("play black " + pos)
+            self.gtp("play black " + pos)
         self.playhere(playercolor, pos)
         self.gnugo_gamelogic()
         self.drawAll()
@@ -676,13 +688,13 @@ class GoGrid(Control):
             self.history_index -= 1
             self.pixels = self.boardhistory[self.history_index].copy()
             self._x, self._y = self.cursorhistory[self.history_index]
-            self._b_captures, self._w_captures =  self.capturehistory[self.history_index]
+            self._b_captures, self._w_captures = self.capturehistory[self.history_index]
             self.pixels2gnugo()
             self.drawAll()
             self.cursorMoved()
 
     def settings2dict(self, settings):
-        #print settings
+        # print settings
         sd = {}
         tokens = settings.split("]")
         name = ""
@@ -690,17 +702,17 @@ class GoGrid(Control):
             token = token.strip()
             if token:
                 if (token[0] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ") and (token.count("[") == 1):
-                    #print "Type-token", token
+                    # print "Type-token", token
                     name, data = token.split("[")
                     sd[name] = [data]
                 elif token[0] == "[":
-                    #print "Data-token", token
+                    # print "Data-token", token
                     sd[name].append(token.split("[")[1])
-                #else:
+                # else:
                 #    print "Invalid token:", token
-        #print sd
+        # print sd
         # Refine the data
-        for key, value in sd.items():
+        for key, value in list(sd.items()):
             if len(value) == 1:
                 sd[key] = value[0]
             try:
@@ -724,7 +736,6 @@ class GoGrid(Control):
             self.togglewhite()
         self._x, self._y = self._oldx, self._oldy
 
-
     def loadsgf(self, filename=""):
         if self.filename and not filename:
             filename = self.filename
@@ -732,21 +743,21 @@ class GoGrid(Control):
             self.filename = filename
         else:
             return
-        print "filename now", filename
+        print("filename now", filename)
         if filename.find("file:/") == 0:
             filename = filename[filename.find("/"):]
         self.fullclear()
         self.gtp("clear_board")
         sgfdata = open(filename).read().split(";")
         if not sgfdata[0].strip()[0] == "(":
-            print "Unable to load %s, because it doesn't start with '('"%(filename)
+            print("Unable to load %s, because it doesn't start with '('" % (filename))
             return
         if not sgfdata[-1].strip()[-1] == ")":
-            print "Unable to load %s, because it doesn't end with ')'"%(filename)
+            print("Unable to load %s, because it doesn't end with ')'" % (filename))
             return
         # Make the dictionary with the sgf-settings
         settings = self.settings2dict(sgfdata[1])
-        print "Settings", settings
+        print("Settings", settings)
 
         # TODO: A better check
         # Is "i" a position in the list of moves?
@@ -759,25 +770,25 @@ class GoGrid(Control):
                         break
             if withi == True:
                 break
-        
+
         # Place the preset stones
         for precolor in ["AB", "AW"]:
             if precolor in settings:
                 if (len(settings[precolor]) == 2) and (len(settings[precolor][0]) == 1):
-                    #only one move in the list
+                    # only one move in the list
                     self.sgfmove(settings[precolor], precolor, withi)
                 else:
                     for move in settings[precolor]:
                         self.sgfmove(move, precolor, withi)
 
         # Make a list of moves and remove whitespace
-        moves = map(lambda x:x.strip(), sgfdata[2:])
+        moves = [x.strip() for x in sgfdata[2:]]
         if moves:
             # Remove the ')' at the end of the last move
             try:
                 moves[-1] = moves[-1][:-1]
             except IndexError:
-                print "Unable to remove the ')' at the end. Oh well."
+                print("Unable to remove the ')' at the end. Oh well.")
         # is "i" a part of a move?
         # TODO: Better check for i or not
         if not withi:
@@ -794,16 +805,16 @@ class GoGrid(Control):
             else:
                 continue
             tempmove = tempmove[:tempmove.find("]")]
-            #print "tempmove", tempmove
+            # print "tempmove", tempmove
             color = tempmove[0]
             try:
                 colorpos = color + self.convertpos(tempmove[2:4], "sgf", "gnugo", withi)
             except ValueError:
-                #print "VALUEERROR", "tempmove", tempmove, "colorpos", colorpos
+                # print "VALUEERROR", "tempmove", tempmove, "colorpos", colorpos
                 continue
             except IndexError:
                 continue
-            #print "append", colorpos
+            # print "append", colorpos
             self.history.append(colorpos)
         self.guesscounter = 0
         self.history_index = -1
@@ -813,7 +824,7 @@ class GoGrid(Control):
 
         self.drawAll()
         self.refresh_now()
-        print "Moves", self.history
+        print("Moves", self.history)
 
     def playguess(self):
         x, y = self.g2s(self._x, self._y)
@@ -828,26 +839,26 @@ class GoGrid(Control):
         guesspos = letter + str(number)
         if pos == guesspos:
             if self.guesscounter > 1:
-                print "You managed to guess the next move in", self.guesscounter, "clicks! :-)"
-            self.next()
+                print("You managed to guess the next move in", self.guesscounter, "clicks! :-)")
+            next(self)
         else:
             self.guesscounter += 1
 
     def mousepos(self, posx, posy):
-        self._x, self._y = map(int, self.s2g(posx, posy))
+        self._x, self._y = list(map(int, self.s2g(posx, posy)))
         self.cursorMoved()
 
     def savesgf(self, filename):
         self.gtp("printsgf " + filename)
 
     def liststones(self):
-        print self.gtp("list_stones black")
-        print self.gtp("list_stones white")
+        print(self.gtp("list_stones black"))
+        print(self.gtp("list_stones white"))
 
     def pixels2gnugo(self):
         self.gtp("clear_board")
-        for x in xrange(self.gridwidth):
-            for y in xrange(self.gridwidth):
+        for x in range(self.gridwidth):
+            for y in range(self.gridwidth):
                 if (x, y) in self.pixels:
                     letter = self._graphics.letters[x]
                     number = (y * -1) + self.gridwidth
@@ -908,12 +919,12 @@ class GoGrid(Control):
         #playnow = movenum % 3 != 0
         #playnow = movenum < 30
 
-        #if movenum < 50:
-        #    playnow = (movenum + 2) % 3 != 0 
-        #else:
-        #    playnow = (movenum + 2) % 3 == 0 
+        # if movenum < 50:
+        #    playnow = (movenum + 2) % 3 != 0
+        # else:
+        #    playnow = (movenum + 2) % 3 == 0
         playnow = (movenum < 30)
-        
+
         if playnow:
             a = Analyzer(self)
             redsurface, redexclude = a.blackliberties()
@@ -927,7 +938,7 @@ class GoGrid(Control):
 
             if pos and (pos not in self.pixels):
                 gnugopos = self.convertpos(pos, "numpos", "gnugo")
-                print "My move :-),", gnugopos
+                print("My move :-),", gnugopos)
                 # The formula below uses "B" if black is True(1), and "W" if False(0)
                 self.playhere("B" * black + "W" * (not black), gnugopos)
                 pygame.event.clear()
@@ -950,7 +961,7 @@ class GoGrid(Control):
            Type can be: numpos, sgf or gnugo
            "numpos" is like this: (3, 5)
               (counted from 0)
-           "sgf" is like this: bq 
+           "sgf" is like this: bq
               (a letter, including i, represents a coordinate)
            "gnugo" is like this: D5
               (the letter, excluding i, represents a coordinate)
@@ -964,53 +975,53 @@ class GoGrid(Control):
             atot = "abcdefghijklmnopqrs"
         else:
             atot = "abcdefghjklmnopqrst"
-        
+
         # Convert the input to xy-format
         if fromtype == "numpos":
             x, y = data
         elif fromtype == "gnugo":
-            #print "from gnugo, data:", data
+            # print "from gnugo, data:", data
             pos = data.strip()
             # subtract 1
             x = self._graphics.letters.index(pos[0])
             # subtract 1, since gnugo starts at 1, then flip the scale
             y = ((int(pos[1:]) - 1) * -1) + (self.gridwidth - 1)
-            #print "from gnugo, xy:", (x, y)
+            # print "from gnugo, xy:", (x, y)
         elif fromtype == "sgf":
-            #print "from sgf, data:", data
+            # print "from sgf, data:", data
             x = atot.index(data[0])
-            #print "x is", x, "atot is", atot
+            # print "x is", x, "atot is", atot
             if withi:
                 y = atot.index(data[1])
             else:
                 # flip the scale
                 y = (atot.index(data[1]) * -1) + (self.gridwidth - 1)
-            #print "from sgf, xy:", (x, y)
+            # print "from sgf, xy:", (x, y)
 
         # This is good to have
-        assert(x in xrange(self.BOARD))
-        assert(y in xrange(self.BOARD))
+        assert(x in range(self.BOARD))
+        assert(y in range(self.BOARD))
 
         # Convert the xy-format to the correct output
         if totype == "numpos":
             return (x, y)
         elif totype == "gnugo":
-            #print "to gnugo, xy:", (x, y)
+            # print "to gnugo, xy:", (x, y)
             letter = self._graphics.letters[x]
             # flip the scale, then add one
             number = (y - (self.gridwidth - 1)) * -1 + 1
             data = letter + str(number)
-            #print "to gnugo, data:", data
+            # print "to gnugo, data:", data
             return data
         elif totype == "sgf":
-            #print "to sgf, xy:", (x, y)
+            # print "to sgf, xy:", (x, y)
             if withi:
                 number = y
             else:
                 # flip the scale
                 number = (self.gridwidth - 1) - y
             data = atot[x] + atot[number]
-            #print "to sgf, data:", data
+            # print "to sgf, data:", data
             return data
 
     def getliberties(self, numpos):
@@ -1020,7 +1031,7 @@ class GoGrid(Control):
         try:
             return int(self.gtp("countlib " + pos))
         except ValueError:
-            print "VALUEERROR", pos
+            print("VALUEERROR", pos)
 
     def gnugoinfo(self):
         self.gtp("name")
@@ -1035,10 +1046,10 @@ class GoGrid(Control):
         x = self._x
         y = self._y
         self.clear()
-        b = lambda pos:self.playhere("B", pos)
-        w = lambda pos:self.playhere("W", pos)
-        map(b, self.gtp("list_stones black").split())
-        map(w, self.gtp("list_stones white").split())
+        def b(pos): return self.playhere("B", pos)
+        def w(pos): return self.playhere("W", pos)
+        list(map(b, self.gtp("list_stones black").split()))
+        list(map(w, self.gtp("list_stones white").split()))
         self._x = x
         self._y = y
         self.cursorMoved()
@@ -1106,15 +1117,15 @@ class GoGrid(Control):
         """ Toggles the selected pixel on and off """
         if self.pixelHere():
             if self.getHere() == self.getFgColor():
-                #print "pixel with fgcolor -> no pixel"
+                # print "pixel with fgcolor -> no pixel"
                 self.removePixel()
                 self.pixels2gnugo()
             else:
-                #print "pixel without fgcolor -> pixel with fgcolor"
+                # print "pixel without fgcolor -> pixel with fgcolor"
                 self.plot()
                 self.pixels2gnugo()
         else:
-            #print "no pixel -> pixel with fgcolor"
+            # print "no pixel -> pixel with fgcolor"
             self.plot()
 
     def left(self):
@@ -1122,15 +1133,15 @@ class GoGrid(Control):
         self._x -= 1
         if self._x < 0:
             self._x = self._xmax
-            #self.up()
+            # self.up()
         self.cursorMoved()
-    
+
     def right(self):
         """ Moves the imagecursor to the right """
         self._x += 1
         if self._x > self._xmax:
             self._x = 0
-            #self.down()
+            # self.down()
         self.cursorMoved()
 
     def up(self):
@@ -1138,7 +1149,7 @@ class GoGrid(Control):
         self._y -= 1
         if self._y < 0:
             self._y = self._ymax
-            #self.left()
+            # self.left()
         self.cursorMoved()
 
     def down(self):
@@ -1146,5 +1157,5 @@ class GoGrid(Control):
         self._y += 1
         if self._y > self._ymax:
             self._y = 0
-            #self.right()
+            # self.right()
         self.cursorMoved()

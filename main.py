@@ -74,10 +74,10 @@ def main():
 
     # is the argument a filename?
     if filename:
-        print "Loading %s..."%filename
+        print("Loading %s..."%filename)
         # load the sgf
         kp.parser.fc("loadsgf", filename)
-        print "ok"
+        print("ok")
         # change the window title
         windowtitle += ' - ' + filename
 

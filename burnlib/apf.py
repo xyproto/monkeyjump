@@ -86,10 +86,10 @@ def load_apf( filename, width=16, height=16 ):
 				color = c4bit[int(pixel[2])]
 				apf.set_at((int(pixel[0]),int(pixel[1])),color)
 		except IndexError:
-			print "Couldn't load",filename
-			print "The size given is ",width,"x",height
-			print "The .apf tried plotting a pixel at (",
-			print int(pixel[0]),",",int(pixel[1]),")!"
+			print("Couldn't load",filename)
+			print("The size given is ",width,"x",height)
+			print("The .apf tried plotting a pixel at (", end=' ')
+			print(int(pixel[0]),",",int(pixel[1]),")!")
 			raise SystemExit
 	# !!Burde forandre i henhold til width og height!!
 	return apf

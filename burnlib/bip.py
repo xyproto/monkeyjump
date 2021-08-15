@@ -57,9 +57,9 @@ def rgbi( rgbs, begin, end ):
 
 	# Are we going up or down?
 	if end > begin:
-		thelist = xrange(begin, end, int(inci))
+		thelist = range(begin, end, int(inci))
 	else:
-		thelist = xrange(end, begin, int(inci))
+		thelist = range(end, begin, int(inci))
 
 	# Iterate
 	for i in thelist:
@@ -125,9 +125,9 @@ def create_defpal():
 def load_bip( filename ):
 	
 	def bip_error( comment, filename=filename ):
-		print 'Error in BIP!'
-		print 'Filename: ',filename
-		print comment
+		print('Error in BIP!')
+		print('Filename: ',filename)
+		print(comment)
 		raise SystemExit
 		
 	bip = pygame.Surface( (32, 32) )#.convert()
@@ -206,9 +206,9 @@ def load_bim( filename ):
 	f.close()
 	# Er det virkelig en bim?
 	if os.path.getsize( filename ) < (32*32):
-		print 'Error with BIM!'
-		print 'Filename: ', filename
-		print 'To small!'
+		print('Error with BIM!')
+		print('Filename: ', filename)
+		print('To small!')
 		raise SystemExit
 	defpal = create_defpal()
 	plass = 0
