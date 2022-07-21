@@ -6,6 +6,8 @@ Monkeyjump is a program for messing around with GNU Go and SGF-files.
 
 I wrote it back in 2005 but decided to release it in 2013, since it was somewhat fun.
 
+Note that it requires Python 2. I might port it to Python 3 some day.
+
 ## Screenshots
 
 ![](screenshots/2005.png)
