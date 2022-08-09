@@ -113,7 +113,7 @@ class Graphics(object):
             fontimage = self.myfont.render(l, False, (0, 0, 0, 255), bgcolor)
             fontimage.set_colorkey(bgcolor)
             self.board.blit(fontimage, (x, 0))
-        numbers = map(str, range(BOARD, 0, -1))
+        numbers = list(map(str, list(range(BOARD, 0, -1))))
         for i, n in enumerate(numbers):
             halfletterheight = 5
             y = int(i * yspace) + margin - halfletterheight
@@ -174,7 +174,7 @@ class Graphics(object):
         Use it to get the surface, and blit it
         """
         if not isinstance(control, Control):
-            print control, "is not a Control!"
+            print(control, "is not a Control!")
             return
         borderwidth = control.getBorderwidth() 
         if control.hasBorder():
@@ -195,7 +195,7 @@ class Graphics(object):
 
     def clearControl(self, control):
         if not isinstance(control, Control):
-            print control, "is not a Control!"
+            print(control, "is not a Control!")
             return
         borderwidth = control.getBorderwidth() + 1
         x, y = control.getPos()
