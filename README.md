@@ -8,6 +8,8 @@ I wrote it back in 2005 but decided to release it in 2013, since it was somewhat
 
 Note that it requires Python 2. I might port it to Python 3 some day.
 
+Works with pypy!
+
 ## Screenshots
 
 ![](screenshots/2005.png)
