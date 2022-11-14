@@ -63,7 +63,7 @@ e estimates the score
 ## Requirements
 
 * Python2 and Pygame (Psyco is optional)
-* GnuGo or another GTP-speaking go-playing computer program
+* GnuGo or another GTP-speaking go-playing computer program (that speaks the same GTP dialect as gnugo, few do). 
 
 
 ## Configuration
