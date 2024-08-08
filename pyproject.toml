@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "monkeyjump"
+version = "0.1.0"
+description = "Minimalistic GUI with keybindings for GnuGo and other GTP applications."
+authors = ["Alexander F. Rødseth <rodseth@gmail.com>"]
+license = "GPL-2.0"
+readme = "README.md"
+packages = [
+    { include = "burnlib" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pygame = "^2.6.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+
+[tool.poetry.scripts]
+monkeyjump = "monkeyjump:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
