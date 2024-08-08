@@ -961,7 +961,12 @@ class GoGrid(Control):
             print(f"Illegal move: {pos}")
             return
 
-        x, y = self.convertpos(pos, "gnugo", "numpos")
+        try:
+            x, y = self.convertpos(pos, "gnugo", "numpos")
+        except ValueError as e:
+            print(f"Error converting position {pos}: {e}")
+            return
+
         self.lastmove = x, y
         self._x = x
         self._y = y
@@ -974,6 +979,7 @@ class GoGrid(Control):
             self.togglecolor(255, 255, 255)
         else:
             self.togglecolor(128, 128, 128)
+        print(f"Move played at: {pos} ({x}, {y})")
 
     def gnugo_gamelogic(self):
         """Use the game-logic of GnuGo, import the stones"""
@@ -990,9 +996,11 @@ class GoGrid(Control):
             print(f"White captures response: {white_captures_response}")
             return
         if b != self._b_captures:
+            print(f"Black captures changed from {self._b_captures} to {b}")
             self.gnugo2pixels()
             self._b_captures = b
         elif w != self._w_captures:
+            print(f"White captures changed from {self._w_captures} to {w}")
             self.gnugo2pixels()
             self._w_captures = w
 
