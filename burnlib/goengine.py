@@ -875,6 +875,8 @@ class GoGrid(Control):
             x, y = data
         elif fromtype == "gnugo":
             pos = data.strip()
+            if pos[0] not in self._graphics.letters:
+                raise ValueError(f"Invalid position: {pos}")
             x = self._graphics.letters.index(pos[0])
             y = ((int(pos[1:]) - 1) * -1) + (self.gridwidth - 1)
         elif fromtype == "sgf":
@@ -920,12 +922,19 @@ class GoGrid(Control):
         self.gtp("get_handicap")
         self.gtp("time_left")
 
+    def is_valid_pos(self, pos):
+        try:
+            self.convertpos(pos, "gnugo", "numpos")
+            return True
+        except ValueError:
+            return False
+
     def gnugo2pixels(self):
         x = self._x
         y = self._y
         self.clear()
-        b = lambda pos: self.playhere("B", pos)
-        w = lambda pos: self.playhere("W", pos)
+        b = lambda pos: self.playhere("B", pos) if self.is_valid_pos(pos) else None
+        w = lambda pos: self.playhere("W", pos) if self.is_valid_pos(pos) else None
         list(map(b, self.gtp("list_stones black").split()))
         list(map(w, self.gtp("list_stones white").split()))
         self._x = x
