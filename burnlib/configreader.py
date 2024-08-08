@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
-# -*-coding:utf-8-*-
-# vim: set enc=utf8:
-#
-# author:   Alexander Rødseth <rodseth@gmail.com>
-# date:     July 2004
-#
 
 from pygame.locals import *
 from burnlib.common import addpath
+
 
 class Keybindings(dict):
 

@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-# -*-coding:utf-8-*-
-# vim: set enc=utf8:
-#
-# author:   Alexander Rødseth <rodseth@gmail.com>
-# date:     July 2004
-#
 
 from burnlib.imageengine import Graphics
 from burnlib.goengine import GoGrid
@@ -14,32 +8,56 @@ from sys import exit as sysexit
 import os
 import os.path
 
+
 def sysexitwrapper(exitcode=0):
-    """ Quits the entire program with an exitcode """
+    """Quits the entire program with an exitcode"""
     sysexit(exitcode)
 
+
 def displaywrapper(fn):
-    """ Shows an image with the external "display" program (ImageMagick) """
+    """Shows an image with the external "display" program (ImageMagick)"""
     os.system(f"display {fn} &")
+
 
 class Parser(object):
 
-    def __init__(self, resolution=(640, 480), fullscreen=False, BOARD=19, THEMEDIR="themes", CONFDIR="."):
+    def __init__(
+        self,
+        resolution=(640, 480),
+        fullscreen=False,
+        BOARD=19,
+        THEMEDIR="themes",
+        CONFDIR=".",
+    ):
         themeconf = open(os.path.join(CONFDIR, "theme.conf")).read().split("\n")[:-1]
-        themename = [line for line in themeconf if not line.strip().startswith("#")][0].strip()
+        themename = [line for line in themeconf if not line.strip().startswith("#")][
+            0
+        ].strip()
         specific_themedir = os.path.join(THEMEDIR, themename)
 
-        self.screen = Graphics(size=resolution, fullscreen=fullscreen, BOARD=BOARD, SPECIFIC_THEMEDIR=specific_themedir)
-        self.gogrid = fullscreen_control(self.screen, GoGrid, bpp=32, gridsize=(BOARD, BOARD), gnugoconf=os.path.join(CONFDIR, "gnugocmd.conf"), SPECIFIC_THEMEDIR=specific_themedir)
+        self.screen = Graphics(
+            size=resolution,
+            fullscreen=fullscreen,
+            BOARD=BOARD,
+            SPECIFIC_THEMEDIR=specific_themedir,
+        )
+        self.gogrid = fullscreen_control(
+            self.screen,
+            GoGrid,
+            bpp=32,
+            gridsize=(BOARD, BOARD),
+            gnugoconf=os.path.join(CONFDIR, "gnugocmd.conf"),
+            SPECIFIC_THEMEDIR=specific_themedir,
+        )
         self.refresh()
 
         self.fc = FunctionCollection()
         self.regfunctions()
 
     def regfunctions(self):
-        """ Connect names with functions. The names can be used for keybinding or in the console.
-            In the future, I'll throw in XMLRPC as well, which should be really easy.
-            "str" is the currently the only supported type in the keybinding-file.
+        """Connect names with functions. The names can be used for keybinding or in the console.
+        In the future, I'll throw in XMLRPC as well, which should be really easy.
+        "str" is the currently the only supported type in the keybinding-file.
         """
         self.fc.add("up", self.gogrid.up)
         self.fc.add("down", self.gogrid.down)
@@ -93,17 +111,17 @@ class Parser(object):
         self.fc.add("status", self.gogrid.status)
 
     def grow(self):
-        """ Zoom in """
+        """Zoom in"""
         self.screen.clearControl(self.gogrid)
         self.gogrid.grow(1.1)
 
     def shrink(self):
-        """ Zoom out """
+        """Zoom out"""
         self.screen.clearControl(self.gogrid)
         self.gogrid.grow(0.9)
 
     def refresh(self):
-        """ Refresh the image """
+        """Refresh the image"""
         self.screen.blitControl(self.gogrid)
         self.screen.refresh()
 
@@ -111,15 +129,29 @@ class Parser(object):
         self.fc(*params)
 
     def console(self):
-        """ Enter the console (can be done recursively as well) """
+        """Enter the console (can be done recursively as well)"""
         self.fc.minimal_console(everytime=["refresh"])
+
 
 class KeyParser(object):
 
-    def __init__(self, filename="keybindings.conf", resolution=(640, 480),
-                 fullscreen=False, BOARD=19, THEMEDIR="themes", CONFDIR="."):
+    def __init__(
+        self,
+        filename="keybindings.conf",
+        resolution=(640, 480),
+        fullscreen=False,
+        BOARD=19,
+        THEMEDIR="themes",
+        CONFDIR=".",
+    ):
         self.keybindings = Keybindings(filename)
-        self.parser = Parser(resolution=resolution, fullscreen=fullscreen, BOARD=BOARD, THEMEDIR=THEMEDIR, CONFDIR=CONFDIR)
+        self.parser = Parser(
+            resolution=resolution,
+            fullscreen=fullscreen,
+            BOARD=BOARD,
+            THEMEDIR=THEMEDIR,
+            CONFDIR=CONFDIR,
+        )
 
     def __call__(self, keycode):
         for bound_keycode, command in self.keybindings.items():
@@ -134,6 +166,7 @@ class KeyParser(object):
 
     def quit(self):
         self.parser("quit")
+
 
 class ParameterChecker(object):
     """
@@ -176,11 +209,13 @@ class ParameterChecker(object):
         if isinstance(exampleType, str) and exampleType in ["byte"]:
             if exampleType == "byte":
                 self._type = "byte"
+
                 def aByte(value):
                     if isinstance(value, int):
                         if 0 <= value <= 255:
                             return True
                     return False
+
                 self._valifunc = aByte
         elif self.strIsPythonType(exampleType):
             self._type = exampleType
@@ -195,7 +230,8 @@ class ParameterChecker(object):
 
     def __str__(self):
         return self._type
-    
+
+
 class ParameterListChecker(object):
     """
     Takes a list of types (as types or exampletypes),
@@ -219,7 +255,9 @@ class ParameterListChecker(object):
             else:
                 return True
 
-            print(f'Parameter nr {error_info[0]} is invalid, wanted type {error_info[1]}, got type {error_info[2]}. Look: {error_info[3]}')
+            print(
+                f"Parameter nr {error_info[0]} is invalid, wanted type {error_info[1]}, got type {error_info[2]}. Look: {error_info[3]}"
+            )
             return False
         else:
             if got < want:
@@ -227,6 +265,7 @@ class ParameterListChecker(object):
             else:
                 print(f"Too many parameters. I wanted {want} but got {got}.")
             return False
+
 
 class FunctionWrapper(object):
     """
@@ -238,21 +277,22 @@ class FunctionWrapper(object):
     def __init__(self, function, paramTypeList):
         self._paramTypeList = paramTypeList
         self._function = function
-    
+
     def __call__(self, *params):
         pc = ParameterListChecker(self._paramTypeList)
         if pc.valid(params):
             return self._function(*params)
         return "invalid parameters"
-    
+
     def getParamTypeList(self):
         return self._paramTypeList
 
+
 class FunctionCollection(object):
-    
+
     def __init__(self):
         self._functions = {}
-    
+
     def add(self, alias, function, paramTypeList=[]):
         if alias not in self._functions:
             self._functions[alias] = FunctionWrapper(function, paramTypeList)
@@ -277,7 +317,7 @@ class FunctionCollection(object):
             return False
 
     def getParamList(self, alias):
-        """ Returns a list of functiontypes for a specific function """
+        """Returns a list of functiontypes for a specific function"""
         if alias in self._functions:
             return self._functions[alias].getParamTypeList()
         else:
@@ -299,13 +339,13 @@ class FunctionCollection(object):
                 return s
 
         def list_functions():
-            """ Returns a sorted list of available functions """
+            """Returns a sorted list of available functions"""
             l = list(self._functions.keys())
             l.sort()
             return l
 
         def docstr(function):
-            """ Returns the docstring for a function """
+            """Returns the docstring for a function"""
             if function in self._functions:
                 helptext = self._functions[function]._function.__doc__
                 if helptext is None:
@@ -313,7 +353,6 @@ class FunctionCollection(object):
                 else:
                     return helptext.strip()
 
-    
         self.add("list", list_functions, [])
         self.add("params", self.getParamList, ["str"])
         self.add("help", docstr, ["str"])
@@ -322,7 +361,7 @@ class FunctionCollection(object):
         print("\nWelcome to the minimal console!\n")
         print("Use list for available commands.")
         print("Use help to examine commands.")
-        print("Use params to get a list of wanted parameters.") 
+        print("Use params to get a list of wanted parameters.")
         print("Use ! in front of Python-expressions.\n")
 
         while 1:

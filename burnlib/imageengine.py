@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-# -*-coding:utf-8-*-
-# vim: set enc=utf8:
-#
-# author:   Alexander Rødseth <rodseth@gmail.com>
-# changes:  July 2004
-#           April 2005
-#           July 2013
-#
 
 import pygame
 from pygame.locals import *
@@ -31,17 +23,27 @@ TODO:
 
 """
 
+
 def fullscreen_control(graphics, ControlClass, *args, **kw):
     kw["screenpos"] = (0, 0)
     kw["buffersize"] = graphics.getSize()
     kw["borderwidth"] = 0
     return ControlClass(*args, **kw)
 
+
 class Graphics(object):
 
     instanciated = False
 
-    def __init__(self, size=(640, 480), bpp=16, screen=True, fullscreen=False, BOARD=19, SPECIFIC_THEMEDIR="themes/uligo"):
+    def __init__(
+        self,
+        size=(640, 480),
+        bpp=16,
+        screen=True,
+        fullscreen=False,
+        BOARD=19,
+        SPECIFIC_THEMEDIR="themes/uligo",
+    ):
         self.RES = size
         self.BPP = bpp
         self._boxes = []
@@ -67,7 +69,9 @@ class Graphics(object):
 
         self.quickpixel = self.buffer.set_at
 
-        self.board = pygame.image.load(addpath(os.path.join(SPECIFIC_THEMEDIR, "board.png")))
+        self.board = pygame.image.load(
+            addpath(os.path.join(SPECIFIC_THEMEDIR, "board.png"))
+        )
         w, h = self.buffer.get_size()
         self.board = pygame.transform.scale(self.board, (w, h))
         margin = 27 + int(19 + BOARD * -1.8)
@@ -85,8 +89,28 @@ class Graphics(object):
 
         pygame.font.init()
         self.myfont = pygame.font.SysFont(None, 12)
-        self.letters = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"]
-        self.letters = self.letters[:BOARD + 1]
+        self.letters = [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "J",
+            "K",
+            "L",
+            "M",
+            "N",
+            "O",
+            "P",
+            "Q",
+            "R",
+            "S",
+            "T",
+        ]
+        self.letters = self.letters[: BOARD + 1]
         for i, l in enumerate(self.letters):
             halfletterwidth = 2
             x = int(i * xspace) + margin - halfletterwidth
@@ -110,7 +134,7 @@ class Graphics(object):
             starpoints = 2, 4, 6
             notpoints = (2, 4), (4, 2), (6, 4), (4, 6)
         elif BOARD == 5:
-            starpoints = 2,
+            starpoints = (2,)
             notpoints = ()
         else:
             starpoints = ()
@@ -126,8 +150,12 @@ class Graphics(object):
                         pos = (int(xspace * x) + margin, int(yspace * y) + margin)
                         pygame.draw.circle(self.board, (0, 0, 0), pos, 4, 0)
 
-        self.black = pygame.image.load(addpath(os.path.join(SPECIFIC_THEMEDIR, "black.png")))
-        self.white = pygame.image.load(addpath(os.path.join(SPECIFIC_THEMEDIR, "white.png")))
+        self.black = pygame.image.load(
+            addpath(os.path.join(SPECIFIC_THEMEDIR, "black.png"))
+        )
+        self.white = pygame.image.load(
+            addpath(os.path.join(SPECIFIC_THEMEDIR, "white.png"))
+        )
 
     def refresh_screen(self):
         screen = pygame.display.get_surface()
@@ -145,26 +173,33 @@ class Graphics(object):
         self.refresh_screen()
 
     def blit(self, graphics, pos):
-        """ Blits another Graphics-object onto itself """
+        """Blits another Graphics-object onto itself"""
         self._boxes.append(self.buffer.blit(graphics.buffer, pos))
 
     def blitControl(self, control):
-        """ All controls have a .getGraphics(), a .getPos() and a .getSize()
+        """All controls have a .getGraphics(), a .getPos() and a .getSize()
         Use it to get the surface, and blit it
         """
         if not isinstance(control, Control):
             print(f"{control} is not a Control!")
             return
-        borderwidth = control.getBorderwidth() 
+        borderwidth = control.getBorderwidth()
         if control.hasBorder():
             x, y = control.getPos()
             w, h = control.getSize()
-            self.rect(x - borderwidth, y - borderwidth,
-                      w + 2 * borderwidth, h + 2 * borderwidth,
-                      255, 200, 64, 255,
-                      borderwidth)
+            self.rect(
+                x - borderwidth,
+                y - borderwidth,
+                w + 2 * borderwidth,
+                h + 2 * borderwidth,
+                255,
+                200,
+                64,
+                255,
+                borderwidth,
+            )
         self.blit(control.getGraphics(), control.getPos())
-    
+
     def pixel(self, x, y, r, g, b, a):
         self.buffer.set_at((x, y), (r, g, b, a))
 
@@ -199,13 +234,19 @@ class Graphics(object):
             image = pygame.transform.scale(self.black, (w - 2, h - 2))
             self._boxes.append(self.buffer.blit(image, (x, y)))
         else:
-            self._boxes.append(self.buffer.blit(self.board, (x, y), (x, y, w - 2, h - 2)))
+            self._boxes.append(
+                self.buffer.blit(self.board, (x, y), (x, y, w - 2, h - 2))
+            )
 
     def ellipse(self, x, y, w, h, r, g, b, a, bw):
-        self._boxes.append(pygame.draw.ellipse(self.buffer, (r, g, b, a), (x, y, w, h), bw))
+        self._boxes.append(
+            pygame.draw.ellipse(self.buffer, (r, g, b, a), (x, y, w, h), bw)
+        )
 
     def rect(self, x, y, w, h, r, g, b, a, bw):
-        self._boxes.append(pygame.draw.rect(self.buffer, (r, g, b, a), (x, y, w, h), bw))
+        self._boxes.append(
+            pygame.draw.rect(self.buffer, (r, g, b, a), (x, y, w, h), bw)
+        )
 
     def refresh(self):
         if self._is_screen:
@@ -225,16 +266,30 @@ class Graphics(object):
     def getBpp(self):
         return self.BPP
 
-class Control(object):
-    """ A general control """
 
-    def __init__(self, screenpos=(0, 0), buffersize=(20, 20), bpp=32,
-                 borderwidth=2, BOARD=19, SPECIFIC_THEMEDIR="themes/uligo"):
+class Control(object):
+    """A general control"""
+
+    def __init__(
+        self,
+        screenpos=(0, 0),
+        buffersize=(20, 20),
+        bpp=32,
+        borderwidth=2,
+        BOARD=19,
+        SPECIFIC_THEMEDIR="themes/uligo",
+    ):
         self._screenpos = screenpos
         self._buffersize = buffersize
         self._bpp = bpp
         self._borderwidth = borderwidth
-        self._graphics = Graphics(self._buffersize, self._bpp, False, BOARD=BOARD, SPECIFIC_THEMEDIR=SPECIFIC_THEMEDIR)
+        self._graphics = Graphics(
+            self._buffersize,
+            self._bpp,
+            False,
+            BOARD=BOARD,
+            SPECIFIC_THEMEDIR=SPECIFIC_THEMEDIR,
+        )
         self.gfx_width = self._graphics.getWidth()
         self.gfx_height = self._graphics.getHeight()
 

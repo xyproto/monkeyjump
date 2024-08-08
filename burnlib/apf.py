@@ -1,28 +1,4 @@
 #!/usr/bin/env python3
-# -*-coding:utf-8-*-
-# vim: set enc=utf8:
-#
-# author:   Alexander Rødseth <rodseth@gmail.com>
-# date:     March 2002
-#
-# apf
-#
-# This is a small library for loading a strange gfx-format belonging to
-# some graphics-programs I've created earlier. Despite the weird format,
-# I didn't care to draw all those sprites again... (apf)
-#
-# The code has quite a few Norwegian comments lying around that I haven't
-# bothered to translate to English yet... oh well =)
-#
-# Alexander Rodseth
-# int19h@online.no
-#
-# 1 mar 2002
-# Added load_all_apf, join_apf and join_images
-#
-# 28 feb 2002
-# Created the basic apf-loading function load_apf
-#
 
 # Imports
 import pygame
@@ -50,6 +26,7 @@ c4bit[13] = (255, 0, 255)
 c4bit[14] = (255, 255, 0)
 c4bit[15] = (255, 255, 255)
 
+
 # Functions
 def load_apf(filename, width=16, height=16):
     apf = pygame.Surface((width, height))
@@ -58,26 +35,29 @@ def load_apf(filename, width=16, height=16):
         # Read the entire file
         s = f.read()
     # Split all lines into an array and remove the last blank
-    s = s.rstrip().split('\n')
+    s = s.rstrip().split("\n")
     if len(s) > 0:
         try:
             # For each line in s
             for pixel in s:
-                if pixel == '':
+                if pixel == "":
                     continue
                 # Split the line into x, y and color, strip first
-                pixel = pixel.strip().split(',')
+                pixel = pixel.strip().split(",")
                 # Plot the pixel with the correct 4-bit color, in RGB format
                 color = c4bit[int(pixel[2])]
                 apf.set_at((int(pixel[0]), int(pixel[1])), color)
         except IndexError:
             print(f"Couldn't load {filename}")
             print(f"The size given is {width}x{height}")
-            print(f"The .apf tried plotting a pixel at ({int(pixel[0])}, {int(pixel[1])})!")
+            print(
+                f"The .apf tried plotting a pixel at ({int(pixel[0])}, {int(pixel[1])})!"
+            )
             raise SystemExit
     return apf
 
-def join_apf(fn1, fn2, fn3, fn4, dirname='apf', width=16, height=16):
+
+def join_apf(fn1, fn2, fn3, fn4, dirname="apf", width=16, height=16):
     joined = pygame.Surface((width * 2, height * 2))
     apf = load_apf(os.path.join(dirname, fn1), width, height)
     joined.blit(apf, (0, 0))
@@ -88,6 +68,7 @@ def join_apf(fn1, fn2, fn3, fn4, dirname='apf', width=16, height=16):
     apf = load_apf(os.path.join(dirname, fn4), width, height)
     joined.blit(apf, (width, height))
     return joined
+
 
 def join_images(lst, right, bottom, width=32, height=32):
     alle = pygame.Surface((right, bottom))

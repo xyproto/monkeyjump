@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# vim: set enc=utf8:
-#
-# author:   Alexander Rødseth <rodseth@gmail.com>
-# date:     May 2005
-#
 
 from burnlib.imageengine import Graphics
 from burnlib.imageengine import Control
@@ -18,10 +12,19 @@ from pygame.locals import RLEACCEL
 from burnlib.common import addpath
 from burnlib.popen2 import popen2
 
+
 class GoGrid(Control):
 
-    def __init__(self, screenpos=(0, 0), buffersize=(128, 128),
-                 gridsize=(19, 19), bpp=32, borderwidth=2, gnugoconf="gnugocmd.conf", SPECIFIC_THEMEDIR="themes/uligo"):
+    def __init__(
+        self,
+        screenpos=(0, 0),
+        buffersize=(128, 128),
+        gridsize=(19, 19),
+        bpp=32,
+        borderwidth=2,
+        gnugoconf="gnugocmd.conf",
+        SPECIFIC_THEMEDIR="themes/uligo",
+    ):
 
         if isinstance(gridsize, int):
             gridsize = (gridsize, gridsize)
@@ -41,7 +44,9 @@ class GoGrid(Control):
         self._b_captures = 0
         self._w_captures = 0
 
-        Control.__init__(self, screenpos, buffersize, bpp, borderwidth, self.BOARD, SPECIFIC_THEMEDIR)
+        Control.__init__(
+            self, screenpos, buffersize, bpp, borderwidth, self.BOARD, SPECIFIC_THEMEDIR
+        )
 
         self._fgcolor = (64, 128, 255, 255)
         self._bgcolor = (150, 50, 0, 255)
@@ -142,21 +147,21 @@ class GoGrid(Control):
         self.resize((newwidth, newheight))
 
     def centerCursor(self):
-        """ Set the cursor-position based on the gridsize """
+        """Set the cursor-position based on the gridsize"""
         self._x = self._width // 2
         self._y = self._height // 2
         self._oldx = self._x
         self._oldy = self._y
 
     def topleftCursor(self):
-        """ Set the cursor-position based on the gridsize """
+        """Set the cursor-position based on the gridsize"""
         self._x = 15
         self._y = 3
         self._oldx = self._x
         self._oldy = self._y
 
     def jumppos(self, xstring, ystring):
-        """ Jump to Go-koordinates """
+        """Jump to Go-koordinates"""
         self._x = int(xstring) - 1
         self._y = int(ystring) - 1
         self._oldx = self._x
@@ -164,20 +169,19 @@ class GoGrid(Control):
         self.drawAll()
 
     def resize(self, controlsize):
-        """ controlsize is not in grid-coordinates, but in screen-coordinates """
+        """controlsize is not in grid-coordinates, but in screen-coordinates"""
 
         if controlsize[0] < self._width and controlsize[1] < self._height:
             print("Controlsize less than imagesize not implemented")
             return
 
-        self.__init__(self._screenpos, controlsize, self._bpp,
-                      self._borderwidth)
+        self.__init__(self._screenpos, controlsize, self._bpp, self._borderwidth)
 
         if self.setSize(self._gridsize):
             self.drawAll()
 
     def setSize(self, gridsize):
-        """ width and height is the gridwidth and gridheight """
+        """width and height is the gridwidth and gridheight"""
         width, height = gridsize
         self._gridsize = gridsize
         if width > self.gfx_width or height > self.gfx_height:
@@ -199,7 +203,7 @@ class GoGrid(Control):
         return True
 
     def make_transp(self, image):
-        """ This function simply takes the topleft color-value and uses it to make
+        """This function simply takes the topleft color-value and uses it to make
         that specific color transparent for the whole image.
         """
         colorkey = image.get_at((0, 0))
@@ -231,11 +235,11 @@ class GoGrid(Control):
         return graphics.getSurf()
 
     def savetransp(self, fn):
-        """ Saves an image to a file, and makes it transparent as well """
+        """Saves an image to a file, and makes it transparent as well"""
         self.save(fn, True)
 
     def save(self, fn, transp=False):
-        """ Saves an image to a file """
+        """Saves an image to a file"""
         print(f"Saving {fn}...")
         ext = splitext(fn)[1].lower()
         if ext in [".bmp", ".tga"]:
@@ -250,27 +254,27 @@ class GoGrid(Control):
             print(f"Unknown file format ({ext}).")
 
     def g2s(self, x, y):
-        """ Gridspace to screenspace """
+        """Gridspace to screenspace"""
         sx = int(x * self._cellwidth)
         sy = int(y * self._cellheight)
         return (sx, sy)
 
     def g2s_x(self, x):
-        """ Gridspace to screenspace """
+        """Gridspace to screenspace"""
         return int(x * self._cellwidth)
 
     def g2s_y(self, y):
-        """ Gridspace to screenspace """
+        """Gridspace to screenspace"""
         return int(y * self._cellheight)
 
     def s2g(self, x, y):
-        """ Screenspace to gridspace """
+        """Screenspace to gridspace"""
         gx = x / self._cellwidth
         gy = y / self._cellheight
         return (gx, gy)
 
     def getScreenRect(self, gx, gy):
-        """ Find the screenrect based on the grid coordinates """
+        """Find the screenrect based on the grid coordinates"""
         sx, sy = self.g2s(gx, gy)
         sw = self.g2s_x(gx + 1) - sx
         sh = self.g2s_y(gy + 1) - sy
@@ -410,7 +414,17 @@ class GoGrid(Control):
             else:
                 of -= 2
 
-            self._graphics.ellipse(sx + woff - of, sy + hoff - of, sw - woff * 2, sh - hoff * 2, r, g, b, a, 1)
+            self._graphics.ellipse(
+                sx + woff - of,
+                sy + hoff - of,
+                sw - woff * 2,
+                sh - hoff * 2,
+                r,
+                g,
+                b,
+                a,
+                1,
+            )
 
     def cursorMoved(self):
         self.drawPixelHere()
@@ -540,7 +554,7 @@ class GoGrid(Control):
         while True:
             s = self.from_gnugo.readline().strip()
             if first:
-                s = s[2 + len(str(self._gtpnr)):]
+                s = s[2 + len(str(self._gtpnr)) :]
                 first = False
             lines.append(s)
             if self.from_gnugo.read(1) == "\n":
@@ -596,9 +610,9 @@ class GoGrid(Control):
         playercolor = colorpos[0]
         pos = colorpos[1:]
         if playercolor == "W":
-           self.gtp(f"play white {pos}")
+            self.gtp(f"play white {pos}")
         else:
-           self.gtp(f"play black {pos}")
+            self.gtp(f"play black {pos}")
         self.playhere(playercolor, pos)
         self.gnugo_gamelogic()
         self.drawAll()
@@ -608,7 +622,7 @@ class GoGrid(Control):
             self.history_index -= 1
             self.pixels = self.boardhistory[self.history_index].copy()
             self._x, self._y = self.cursorhistory[self.history_index]
-            self._b_captures, self._w_captures =  self.capturehistory[self.history_index]
+            self._b_captures, self._w_captures = self.capturehistory[self.history_index]
             self.pixels2gnugo()
             self.drawAll()
             self.cursorMoved()
@@ -620,7 +634,9 @@ class GoGrid(Control):
         for token in tokens:
             token = token.strip()
             if token:
-                if (token[0] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ") and (token.count("[") == 1):
+                if (token[0] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ") and (
+                    token.count("[") == 1
+                ):
                     name, data = token.split("[")
                     sd[name] = [data]
                 elif token[0] == "[":
@@ -656,7 +672,7 @@ class GoGrid(Control):
             return
         print("filename now", filename)
         if filename.find("file:/") == 0:
-            filename = filename[filename.find("/"):]
+            filename = filename[filename.find("/") :]
         self.fullclear()
         self.gtp("clear_board")
         with open(filename) as sgf_file:
@@ -700,12 +716,12 @@ class GoGrid(Control):
         for move in moves:
             tempmove = ""
             if "B[" in move:
-                tempmove = move[move.find("B["):]
+                tempmove = move[move.find("B[") :]
             elif "W[" in move:
-                tempmove = move[move.find("W["):]
+                tempmove = move[move.find("W[") :]
             else:
                 continue
-            tempmove = tempmove[:tempmove.find("]")]
+            tempmove = tempmove[: tempmove.find("]")]
             color = tempmove[0]
             try:
                 colorpos = color + self.convertpos(tempmove[2:4], "sgf", "gnugo", withi)
@@ -735,7 +751,9 @@ class GoGrid(Control):
         guesspos = letter + str(number)
         if pos == guesspos:
             if self.guesscounter > 1:
-                print(f"You managed to guess the next move in {self.guesscounter} clicks! :-)")
+                print(
+                    f"You managed to guess the next move in {self.guesscounter} clicks! :-)"
+                )
             self.next()
         else:
             self.guesscounter += 1
@@ -837,13 +855,13 @@ class GoGrid(Control):
 
     def convertpos(self, data, fromtype="gnugo", totype="numpos", withi=False):
         """Converts between different types of coordinates.
-           Type can be: numpos, sgf or gnugo
-           "numpos" is like this: (3, 5)
-              (counted from 0)
-           "sgf" is like this: bq
-              (a letter, including i, represents a coordinate)
-           "gnugo" is like this: D5
-              (the letter, excluding i, represents a coordinate)
+        Type can be: numpos, sgf or gnugo
+        "numpos" is like this: (3, 5)
+           (counted from 0)
+        "sgf" is like this: bq
+           (a letter, including i, represents a coordinate)
+        "gnugo" is like this: D5
+           (the letter, excluding i, represents a coordinate)
         """
         assert fromtype in ["numpos", "sgf", "gnugo"]
         assert totype in ["numpos", "sgf", "gnugo"]
@@ -886,7 +904,7 @@ class GoGrid(Control):
 
     def getliberties(self, numpos):
         """Uses GnuGo for finding the number of liberties at a given
-           numerical position in the form (x, y)."""
+        numerical position in the form (x, y)."""
         pos = self.convertpos(numpos, "numpos", "gnugo")
         try:
             return int(self.gtp(f"countlib {pos}"))
@@ -949,14 +967,16 @@ class GoGrid(Control):
             self.togglecolor(128, 128, 128)
 
     def gnugo_gamelogic(self):
-        """ Use the game-logic of GnuGo, import the stones """
+        """Use the game-logic of GnuGo, import the stones"""
         try:
             black_captures_response = self.gtp("captures black")
             white_captures_response = self.gtp("captures white")
             b = int(black_captures_response.split()[-1])
             w = int(white_captures_response.split()[-1])
         except ValueError as e:
-            print(f"Error: could not get captures black or captures white from the GTP engine: {e}")
+            print(
+                f"Error: could not get captures black or captures white from the GTP engine: {e}"
+            )
             print(f"Black captures response: {black_captures_response}")
             print(f"White captures response: {white_captures_response}")
             return
@@ -981,7 +1001,7 @@ class GoGrid(Control):
         self.toggle()
 
     def toggle(self):
-        """ Toggles the selected pixel on and off """
+        """Toggles the selected pixel on and off"""
         if self.pixelHere():
             if self.getHere() == self.getFgColor():
                 self.removePixel()
@@ -993,28 +1013,28 @@ class GoGrid(Control):
             self.plot()
 
     def left(self):
-        """ Moves the imagecursor to the left """
+        """Moves the imagecursor to the left"""
         self._x -= 1
         if self._x < 0:
             self._x = self._xmax
         self.cursorMoved()
 
     def right(self):
-        """ Moves the imagecursor to the right """
+        """Moves the imagecursor to the right"""
         self._x += 1
         if self._x > self._xmax:
             self._x = 0
         self.cursorMoved()
 
     def up(self):
-        """ Moves the imagecursor up """
+        """Moves the imagecursor up"""
         self._y -= 1
         if self._y < 0:
             self._y = self._ymax
         self.cursorMoved()
 
     def down(self):
-        """ Moves the imagecursor down """
+        """Moves the imagecursor down"""
         self._y += 1
         if self._y > self._ymax:
             self._y = 0

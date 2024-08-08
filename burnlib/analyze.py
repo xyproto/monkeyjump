@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-# -*-coding:utf-8-*-
-# vim: set enc=utf8:
-#
-# author:   Alexander Rødseth <rodseth@gmail.com>
-# date:     May 2005
-#
 
 import pygame
 from pygame.locals import *
@@ -15,7 +9,7 @@ from functools import reduce
 class Analyzer(object):
 
     def __init__(self, goboard):
-        self.goboard = goboard 
+        self.goboard = goboard
         self._blackwhiteempty()
         self._blackliberties = {}
         self._whiteliberties = {}
@@ -64,7 +58,9 @@ class Analyzer(object):
         """Helper function for getting hold of the black, white and empty fields on a goboard."""
         pixels = self.goboard.pixels
         self.black = [poscolor[0] for poscolor in pixels.items() if poscolor[1][0] == 0]
-        self.white = [poscolor[0] for poscolor in pixels.items() if poscolor[1][0] == 255]
+        self.white = [
+            poscolor[0] for poscolor in pixels.items() if poscolor[1][0] == 255
+        ]
         self.empty = []
         for x in range(self.goboard.gridwidth):
             for y in range(self.goboard.gridwidth):
@@ -73,7 +69,7 @@ class Analyzer(object):
 
     def blurmore(self, surface, repeat=3, exclude=[], divnum=5.0):
         """blur4 a surface, several times, until the best point is found.
-           repeat is the maximum number of iterations."""
+        repeat is the maximum number of iterations."""
 
         origbias = 2.4
         cornerbias = 1.0
@@ -95,12 +91,20 @@ class Analyzer(object):
             oldbestcount = bestcount
             bestcount = 0
             w = self.goboard.gridwidth
-            niceorder = reduce(lambda x, y: x + y, zip(range(w)[:w//2], range(w)[-1:(w//2)-1:-1]))
+            niceorder = reduce(
+                lambda x, y: x + y,
+                zip(range(w)[: w // 2], range(w)[-1 : (w // 2) - 1 : -1]),
+            )
 
             for x in niceorder:
                 for y in niceorder:
                     color = surface.get_at((x, y))[0:3]
-                    g = (255 - (color[0] * -1.0) * 0.1 + color[1] * 0.8 + (255 - (color[2] * -1.0) * 0.1)) / 3.0
+                    g = (
+                        255
+                        - (color[0] * -1.0) * 0.1
+                        + color[1] * 0.8
+                        + (255 - (color[2] * -1.0) * 0.1)
+                    ) / 3.0
                     g *= origbias
                     if cornerbias:
                         c = w / 2
@@ -130,7 +134,7 @@ class Analyzer(object):
                             g -= friendbias * friends
                     if enemybias:
                         enemies = self.find_enemies((x, y))
-                        g -= enemybias ** enemies
+                        g -= enemybias**enemies
                     if g > greenest:
                         greenest = g
                         gpos = (x, y)
@@ -151,10 +155,10 @@ class Analyzer(object):
         return surface, gpos
 
     def blur4(self, surface, exclude=[], divnum=5.0):
-        """ blur4(surface, except, divnum=5.0) -> surface
-          * blurrer pixlene i surface, ved å ta gjennomsnittet av denne, N, W, E, S pixlene
-          * der except er en liste over koordinater som ikke skal leses eller skrives til
-          * der divnum er hva man skal dele på når man tar gjennomsnittet av steinene
+        """blur4(surface, except, divnum=5.0) -> surface
+        * blurrer pixlene i surface, ved å ta gjennomsnittet av denne, N, W, E, S pixlene
+        * der except er en liste over koordinater som ikke skal leses eller skrives til
+        * der divnum er hva man skal dele på når man tar gjennomsnittet av steinene
         """
         w = self.goboard.gridwidth
         newsurface = pygame.Surface((w, w))
@@ -191,16 +195,16 @@ class Analyzer(object):
         return newsurface
 
     def medianblur4(self, surface, exclude, divnum=4.0):
-        """ medianblur4(surface, except, divnum=4.0) -> surface
-          * blurrer pixlene i surface, ved å ta medianen av N, W, E, S pixlene
-          * der except er en liste over koordinater som ikke skal leses eller skrives til
-          * der divnum er hva man skal dele på når man tar gjennomsnittet av steinene
+        """medianblur4(surface, except, divnum=4.0) -> surface
+        * blurrer pixlene i surface, ved å ta medianen av N, W, E, S pixlene
+        * der except er en liste over koordinater som ikke skal leses eller skrives til
+        * der divnum er hva man skal dele på når man tar gjennomsnittet av steinene
         """
         return surface
 
     def combine(self, redsurface, greensurface, bluesurface):
-        """ combine(redsurface, greensurface, bluesurface) -> surface
-          * der en surface godt kan være None
+        """combine(redsurface, greensurface, bluesurface) -> surface
+        * der en surface godt kan være None
         """
         w = self.goboard.gridwidth
         surface = pygame.Surface((w, w))
@@ -214,9 +218,9 @@ class Analyzer(object):
 
     def blackliberties(self):
         """blackliberties(goboard) -> surface, except
-          * finner svarte liberties
-          * lager et bilde av svarte liberties
-          * returnerer en liste over hvite koordinater
+        * finner svarte liberties
+        * lager et bilde av svarte liberties
+        * returnerer en liste over hvite koordinater
         """
         self._blackliberties = {}
         for numpos in self.black:
@@ -238,9 +242,9 @@ class Analyzer(object):
 
     def whiteliberties(self):
         """whiteliberties(goboard) -> surface, except
-          * finner hvite liberties
-          * lager et bilde av hvite liberties
-          * returnerer en liste over svarte koordinater
+        * finner hvite liberties
+        * lager et bilde av hvite liberties
+        * returnerer en liste over svarte koordinater
         """
         self._whiteliberties = {}
         for numpos in self.white:
@@ -261,10 +265,10 @@ class Analyzer(object):
         return (surface, exclude)
 
     def voidliberties(self):
-        """ voidliberties(goboard) -> surface, except
-          * finner liberties for de tomme punktene
-          * lager et bilde av voidliberties
-          * returnerer en liste over svarte og hvite koordinater
+        """voidliberties(goboard) -> surface, except
+        * finner liberties for de tomme punktene
+        * lager et bilde av voidliberties
+        * returnerer en liste over svarte og hvite koordinater
         """
         edgy = True
         voidliberties = {}
