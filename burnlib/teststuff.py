@@ -1,11 +1,11 @@
-#!/usr/bin/python
-#-*-coding:utf-8-*-
-#vim: set enc=utf8:
+#!/usr/bin/env python3
+# -*-coding:utf-8-*-
+# vim: set enc=utf8:
 #
 # author:   Alexander Rødseth <rodseth@gmail.com>
 # date:     May 2005
 #
-# TODO: Use the test-modules that comes with Python and red-green-refactor
+# TODO: Use the test-modules that come with Python and red-green-refactor
 
 from burnlib.goengine import GoGrid
 from burnlib.analyze import Analyzer
@@ -39,8 +39,8 @@ class TestAll:
         assert("C17" == self.g.convertpos("cr", fromtype="sgf", totype="gnugo"))
         assert("C1" == self.g.convertpos("ca", fromtype="sgf", totype="gnugo"))
 
-        print "conversion seems to be working"
+        print("conversion seems to be working")
 
 
-if __name__ == "burnlib.teststuff":
+if __name__ == "__main__":
     t = TestAll()

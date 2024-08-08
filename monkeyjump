@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#vim: set enc=utf8:
+# vim: set enc=utf8:
 #
 # author:   Alexander Rødseth <rodseth@gmail.com>
 #
@@ -36,12 +36,6 @@ RESOLUTION = (512, 512)
 # If you run it in a window, you have room for the GnuGo GTP-text as well :-)
 FULLSCREEN = False
 
-try:
-    import psyco
-    psyco.full()
-except ImportError:
-    pass
-
 def main():
     global CONFDIR
     global THEMEDIR
@@ -58,15 +52,14 @@ def main():
     if filename:
         # finding size based on the filename
         # (could include other sizes in the future)
-        file = open(filename)
-        data = file.read()
-        if "SZ[9]" in data:
-            BOARDSIZE = 9
-        elif "SZ[13]" in data:
-            BOARDSIZE = 13
-        elif "SZ[19]" in data:
-            BOARDSIZE = 19
-        file.close()
+        with open(filename) as file:
+            data = file.read()
+            if "SZ[9]" in data:
+                BOARDSIZE = 9
+            elif "SZ[13]" in data:
+                BOARDSIZE = 13
+            elif "SZ[19]" in data:
+                BOARDSIZE = 19
 
     kp = KeyParser(os.path.join(CONFDIR, "keybindings.conf"), RESOLUTION, FULLSCREEN, BOARDSIZE, THEMEDIR, CONFDIR)
 
@@ -74,12 +67,12 @@ def main():
 
     # is the argument a filename?
     if filename:
-        print "Loading %s..."%filename
+        print(f"Loading {filename}...")
         # load the sgf
         kp.parser.fc("loadsgf", filename)
-        print "ok"
+        print("ok")
         # change the window title
-        windowtitle += ' - ' + filename
+        windowtitle += f' - {filename}'
 
     # set the window title
     pygame.display.set_caption(windowtitle)

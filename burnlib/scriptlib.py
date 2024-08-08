@@ -1,6 +1,6 @@
-#!/usr/bin/python
-#-*-coding:utf-8-*-
-#vim: set enc=utf8:
+#!/usr/bin/env python3
+# -*-coding:utf-8-*-
+# vim: set enc=utf8:
 #
 # author:   Alexander Rødseth <rodseth@gmail.com>
 # date:     July 2004
@@ -20,14 +20,11 @@ def sysexitwrapper(exitcode=0):
 
 def displaywrapper(fn):
     """ Shows an image with the external "display" program (ImageMagick) """
-    os.system("display %s &" % fn )
+    os.system(f"display {fn} &")
 
 class Parser(object):
 
     def __init__(self, resolution=(640, 480), fullscreen=False, BOARD=19, THEMEDIR="themes", CONFDIR="."):
-        # Setup the screen and a GoGrid
-        #print "parser size", BOARD
-
         themeconf = open(os.path.join(CONFDIR, "theme.conf")).read().split("\n")[:-1]
         themename = [line for line in themeconf if not line.strip().startswith("#")][0].strip()
         specific_themedir = os.path.join(THEMEDIR, themename)
@@ -36,7 +33,6 @@ class Parser(object):
         self.gogrid = fullscreen_control(self.screen, GoGrid, bpp=32, gridsize=(BOARD, BOARD), gnugoconf=os.path.join(CONFDIR, "gnugocmd.conf"), SPECIFIC_THEMEDIR=specific_themedir)
         self.refresh()
 
-        # Create a function-collection and register functions
         self.fc = FunctionCollection()
         self.regfunctions()
 
@@ -98,13 +94,11 @@ class Parser(object):
 
     def grow(self):
         """ Zoom in """
-        # Grow the image-control
         self.screen.clearControl(self.gogrid)
         self.gogrid.grow(1.1)
 
     def shrink(self):
         """ Zoom out """
-        # Shrink the image-control
         self.screen.clearControl(self.gogrid)
         self.gogrid.grow(0.9)
 
@@ -123,8 +117,7 @@ class Parser(object):
 class KeyParser(object):
 
     def __init__(self, filename="keybindings.conf", resolution=(640, 480),
-            fullscreen=False, BOARD=19, THEMEDIR="themes", CONFDIR="."):
-        #print "kp boardsize", BOARD
+                 fullscreen=False, BOARD=19, THEMEDIR="themes", CONFDIR="."):
         self.keybindings = Keybindings(filename)
         self.parser = Parser(resolution=resolution, fullscreen=fullscreen, BOARD=BOARD, THEMEDIR=THEMEDIR, CONFDIR=CONFDIR)
 
@@ -177,37 +170,26 @@ class ParameterChecker(object):
             f = ParameterChecker(0.0)
             b = ParameterChecker("byte")
         """
-        # For the future
         self._type = "BUG: unset type-string!"
-        # Is this a "special kind of type"
         if type(exampleType) == type(type):
-            print "Warning! Type is of type type!"
-        if type(exampleType) == type(str()) and exampleType in ["byte"]:
+            print("Warning! Type is of type type!")
+        if isinstance(exampleType, str) and exampleType in ["byte"]:
             if exampleType == "byte":
                 self._type = "byte"
                 def aByte(value):
-                    if type(value) == type(int()):
-                        if (value >= 0) and (value <= 255):
+                    if isinstance(value, int):
+                        if 0 <= value <= 255:
                             return True
                     return False
                 self._valifunc = aByte
-            # Add more types here later
-            #else:
-            #    # You should never reach this place
-            #    print "BUG: exampleType list and exampleType ifs don't match!"
-            #    assert(0)
-        # Create a validation function based on exampleType 
         elif self.strIsPythonType(exampleType):
             self._type = exampleType
             correct_type = self.getPythonType(exampleType)
-            self._valifunc = lambda x:type(x) == correct_type
+            self._valifunc = lambda x: isinstance(x, correct_type)
         else:
             self._type = str(type(exampleType)).split("'")[1]
-            self._valifunc = lambda x:type(x) == type(exampleType)
+            self._valifunc = lambda x: isinstance(x, type(exampleType))
 
-    """
-    Uses the validation function to check if a given parameter is okay
-    """
     def valid(self, value):
         return self._valifunc(value)
 
@@ -221,7 +203,7 @@ class ParameterListChecker(object):
     """
 
     def __init__(self, typelist):
-        self.validators = map(ParameterChecker, typelist)
+        self.validators = list(map(ParameterChecker, typelist))
 
     def valid(self, values):
         got = len(values)
@@ -231,22 +213,19 @@ class ParameterListChecker(object):
             for i, validator in enumerate(self.validators):
                 value = values[i]
                 if not validator.valid(values[i]):
-                        # Error-message-info
-                        valuetype = str(type(value)).split("'")[1]
-                        error_info = i + 1, str(validator), valuetype, value
-                        break
+                    valuetype = str(type(value)).split("'")[1]
+                    error_info = i + 1, str(validator), valuetype, value
+                    break
             else:
-                # All params are ok, no break occured
                 return True
 
-            # Some params are wrong, break occured
-            print 'Parameter nr %i is invalid, wanted type %s, got type %s. Look: %s' % error_info
+            print(f'Parameter nr {error_info[0]} is invalid, wanted type {error_info[1]}, got type {error_info[2]}. Look: {error_info[3]}')
             return False
         else:
             if got < want:
-                print "Too few parameters. I wanted %i but got %i." % (want, got)
+                print(f"Too few parameters. I wanted {want} but got {got}.")
             else:
-                print "Too many parameters. I wanted %i but got %i." % (want, got)
+                print(f"Too many parameters. I wanted {want} but got {got}.")
             return False
 
 class FunctionWrapper(object):
@@ -263,7 +242,6 @@ class FunctionWrapper(object):
     def __call__(self, *params):
         pc = ParameterListChecker(self._paramTypeList)
         if pc.valid(params):
-            # Extended call-syntax =)
             return self._function(*params)
         return "invalid parameters"
     
@@ -280,7 +258,7 @@ class FunctionCollection(object):
             self._functions[alias] = FunctionWrapper(function, paramTypeList)
             return True
         else:
-            print "That function is already defined."
+            print("That function is already defined.")
             return False
 
     def remove(self, alias):
@@ -288,14 +266,14 @@ class FunctionCollection(object):
             del self._functions[alias]
             return True
         else:
-            print "Unable to find the function that was set for removal."
+            print("Unable to find the function that was set for removal.")
             return False
 
     def __call__(self, alias, *parameters):
         if alias in self._functions:
             return self._functions[alias](*parameters)
         else:
-            print "Unable to find the given function."
+            print("Unable to find the given function.")
             return False
 
     def getParamList(self, alias):
@@ -303,10 +281,9 @@ class FunctionCollection(object):
         if alias in self._functions:
             return self._functions[alias].getParamTypeList()
         else:
-            print "Unable to find the given function:", alias
+            print(f"Unable to find the given function: {alias}")
             return False
 
-    # Deprecated
     def minimal_console(self, everytime=[]):
 
         def convert_if_possible(s):
@@ -323,7 +300,7 @@ class FunctionCollection(object):
 
         def list_functions():
             """ Returns a sorted list of available functions """
-            l = self._functions.keys()
+            l = list(self._functions.keys())
             l.sort()
             return l
 
@@ -331,7 +308,7 @@ class FunctionCollection(object):
             """ Returns the docstring for a function """
             if function in self._functions:
                 helptext = self._functions[function]._function.__doc__
-                if helptext == None:
+                if helptext is None:
                     return "No help is available for the given function. :/"
                 else:
                     return helptext.strip()
@@ -342,32 +319,28 @@ class FunctionCollection(object):
         self.add("help", docstr, ["str"])
         self.add("quit", sysexitwrapper, ["int"])
 
-        print
-        print "Welcome to the minimal console!"
-        print
-        print "Use list for available commands."
-        print "Use help to examine commands."
-        print "Use params to get a list of wanted parameters." 
-        print "Use ! in front of Python-expressions."
-        print
+        print("\nWelcome to the minimal console!\n")
+        print("Use list for available commands.")
+        print("Use help to examine commands.")
+        print("Use params to get a list of wanted parameters.") 
+        print("Use ! in front of Python-expressions.\n")
 
         while 1:
             try:
-                cmd = raw_input("# ").strip()
+                cmd = input("# ").strip()
                 if len(cmd) > 0 and cmd[0] == "!":
-                    print eval(cmd[1:])
+                    print(eval(cmd[1:]))
                 elif len(cmd) > 0 and cmd.find("exit") == 0:
-                    print "Done with console."
+                    print("Done with console.")
                     break
                 else:
-                    plist = map(convert_if_possible, cmd.split(" "))
+                    plist = list(map(convert_if_possible, cmd.split(" ")))
                     result = self(*plist)
-                    if not (result == None):
-                        print result
-                # Do all the script-commands in everytime now
+                    if result is not None:
+                        print(result)
                 map(self, everytime)
             except IndexError:
-                print "IndexError"
+                print("IndexError")
             except EOFError:
-                print os.sep + "EOFError, exiting console"
+                print(os.sep + "EOFError, exiting console")
                 break

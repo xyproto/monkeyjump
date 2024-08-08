@@ -1,6 +1,6 @@
-#!/usr/bin/python
-#-*-coding:utf-8-*-
-#vim: set enc=utf8:
+#!/usr/bin/env python3
+# -*-coding:utf-8-*-
+# vim: set enc=utf8:
 #
 # author:   Alexander Rødseth <rodseth@gmail.com>
 # date:     July 2004

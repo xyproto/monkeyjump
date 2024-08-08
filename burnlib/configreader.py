@@ -1,6 +1,6 @@
-#!/usr/bin/python
-#-*-coding:utf-8-*-
-#vim: set enc=utf8:
+#!/usr/bin/env python3
+# -*-coding:utf-8-*-
+# vim: set enc=utf8:
 #
 # author:   Alexander Rødseth <rodseth@gmail.com>
 # date:     July 2004
@@ -38,7 +38,7 @@ class Keybindings(dict):
             try:
                 keycode = eval("K_" + keyname.upper())
             except NameError:
-                print "Unable to find keycode for key:", keyname
+                print("Unable to find keycode for key:", keyname)
                 return
         return keycode
 
