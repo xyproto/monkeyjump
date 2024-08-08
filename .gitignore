@@ -1,1 +1,8 @@
+*.bak
 *.pyc
+*.pyo
+*.swp
+*.tmp
+.DS_Store
+__pycache__
+include.txt
