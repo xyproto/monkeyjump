@@ -6,9 +6,7 @@ Monkeyjump is a program for messing around with GNU Go and SGF-files.
 
 I wrote it back in 2005 but decided to release it in 2013, since it was somewhat fun.
 
-Note that it requires Python 2. I might port it to Python 3 some day.
-
-Works with pypy!
+Recently ported from Python 2 to Python 3.12. It is not fully polished yet.
 
 ## Screenshots
 
@@ -62,8 +60,8 @@ e estimates the score
 
 ## Requirements
 
-* Python2 and Pygame (Psyco is optional)
-* GnuGo or another GTP-speaking go-playing computer program (that speaks the same GTP dialect as gnugo, few do). 
+* Python 3.12 and Pygame
+* GnuGo or another GTP-speaking go-playing computer program (that speaks the same GTP dialect as gnugo, few do).
 
 
 ## Configuration
@@ -89,4 +87,4 @@ which are included in his GPL-ed program [uliGo](http://www.u-go.net/uligo/).
 
 * Author: Alexander F. Rødseth
 * License: GPL2
-* Version: 0.5
+* Version: 1.0.0
