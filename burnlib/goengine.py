@@ -11,6 +11,7 @@ import pygame
 from pygame.locals import RLEACCEL
 from burnlib.common import addpath
 from burnlib.popen2 import popen2
+import sys
 
 
 class GoGrid(Control):
@@ -76,17 +77,29 @@ class GoGrid(Control):
         cmd = f"{self._gtpnr} {command}\n"
         if verbose:
             print(f"Sending command: {cmd}")
-        self.to_gnugo.write(cmd)
-        self.to_gnugo.flush()
+        try:
+            self.to_gnugo.write(cmd)
+            self.to_gnugo.flush()
+        except IOError as e:
+            print(f"IOError: {e} - Error sending command to GnuGo")
+            return None
+
         response = []
         while True:
             line = self.from_gnugo.readline().strip()
+            if not line:
+                continue
             response.append(line)
             if line.startswith("=") or line.startswith("?"):
                 break
+
         response_str = "\n".join(response)
         if verbose:
             print(f"Received response: {response_str}")
+
+        if "illegal move" in response_str:
+            sys.stderr.write(f"Illegal move command: {cmd}")
+
         self._gtpnr += 1
         return response_str
 
@@ -537,7 +550,8 @@ class GoGrid(Control):
     def quit(self, exitcode="0"):
         self.showboard()
         self.gtp("quit")
-        sysexit(int(exitcode))
+        return True # quit
+        #sysexit(int(exitcode))
 
     def undo(self):
         result = self.gtp("undo")

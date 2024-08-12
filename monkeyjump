@@ -68,13 +68,14 @@ def main():
     # limit the type of events allowed
     pygame.event.set_allowed(KEYUP)
 
-    while True:
+    quit = False
+    while not quit:
         pygame.event.pump()
         event = pygame.event.wait()
         if event.type == QUIT:
             break
         elif event.type == KEYUP:
-            kp(event.key)
+            quit = kp(event.key)
         elif event.type == MOUSEMOTION:
             kp.parser.fc("mousepos", *pygame.mouse.get_pos())
         mousepressed = pygame.mouse.get_pressed()

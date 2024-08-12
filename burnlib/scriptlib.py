@@ -126,7 +126,7 @@ class Parser(object):
         self.screen.refresh()
 
     def __call__(self, *params):
-        self.fc(*params)
+        return self.fc(*params)
 
     def console(self):
         """Enter the console (can be done recursively as well)"""
@@ -156,7 +156,9 @@ class KeyParser(object):
     def __call__(self, keycode):
         for bound_keycode, command in self.keybindings.items():
             if keycode == bound_keycode:
-                self.parser(*command)
+                if self.parser(*command):
+                    return True # quit
+        return False
 
     def command(self, commandstring):
         self.parser(commandstring)
@@ -165,7 +167,7 @@ class KeyParser(object):
         self.parser.refresh()
 
     def quit(self):
-        self.parser("quit")
+        return self.parser("quit")
 
 
 class ParameterChecker(object):
