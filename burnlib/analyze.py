@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import pygame
+from functools import reduce
 from pygame.locals import *
 import math
-from functools import reduce
+import pygame
 
 
 class Analyzer(object):
@@ -193,14 +193,6 @@ class Analyzer(object):
                 except TypeError:
                     print("set_at", (x, y), (r, g, b))
         return newsurface
-
-    def medianblur4(self, surface, exclude, divnum=4.0):
-        """medianblur4(surface, except, divnum=4.0) -> surface
-        * blurrer pixlene i surface, ved å ta medianen av N, W, E, S pixlene
-        * der except er en liste over koordinater som ikke skal leses eller skrives til
-        * der divnum er hva man skal dele på når man tar gjennomsnittet av steinene
-        """
-        return surface
 
     def combine(self, redsurface, greensurface, bluesurface):
         """combine(redsurface, greensurface, bluesurface) -> surface
