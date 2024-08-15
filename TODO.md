@@ -31,8 +31,3 @@
 
 - [ ] XMLRPC-support, just to see if it will be useful
 - [ ] Understand when a group is out of liberties, without the help of GNU Go
-
-## Completed
-
-- [x] Add desktop shortcut and icon for the Arch Linux package
-- [x] Port to Python 3
