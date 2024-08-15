@@ -16,10 +16,10 @@ Recently ported from Python 2 to Python 3.12.
 
 ## Quickstart
 
-Checkout the project and run:
+Install Poetry, checkout the project and run:
 
 ```
-./monkeyjump
+poetry run ./monkeyjump
 ```
 
 Default keybindings:

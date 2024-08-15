@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 
-# Common utilities
-import os.path
-import sys
+from pathlib import Path
 
 
 def addpath(filename):
-    # Find out where we are
-    dirname = os.path.dirname(
-        os.path.abspath(os.path.join(os.path.curdir, sys.argv[0]))
-    )
+    # Find the absolute path of the current working directory
+    current_dir = Path.cwd().resolve()
     # Join the path with the relative filename and return
-    return os.path.join(dirname, filename)
+    return current_dir / filename

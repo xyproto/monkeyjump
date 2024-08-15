@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 
-# Imports
-import pygame
-import os
 from fnmatch import filter
 from math import fabs
-
-# Functions
-
+import os
+import pygame
 
 def rgbi(rgbs, begin, end):
     """This function interpolates the r,g,b-values in a dictionary-palette
